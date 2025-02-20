@@ -10,18 +10,20 @@ public class HelpCommand extends Command {
     @Override
     public void exec() {
         Command command;
-        String first = this.args.getFirst();
-        if (first.equals("generate")) {
-            command = new GenerateCommand();
-            exec(command);
-        } else if (first.equals("update")) {
-            command = new UpdateCommand();
-            exec(command);
-        } else if (first.equals("all")) {
-            CommandRegistry registry = new CommandRegistry();
-            exec(registry);
-        } else {
-            throw new RosettaException(args.getFirst());
+        switch (args.getFirst()) {
+            case "generate" -> {
+                command = new GenerateCommand();
+                exec(command);
+            }
+            case "update" -> {
+                command = new UpdateCommand();
+                exec(command);
+            }
+            case "all" -> {
+                CommandRegistry registry = new CommandRegistry();
+                exec(registry);
+            }
+            default -> throw new RosettaException(args.getFirst());
         }
     }
 

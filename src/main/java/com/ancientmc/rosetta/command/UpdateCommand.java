@@ -15,7 +15,7 @@ public class UpdateCommand extends Command {
 
     @Override
     public int argCount() {
-        return 7;
+        return 8;
     }
 
     @Override

@@ -19,15 +19,12 @@ public class Config {
             lines.forEach(line -> {
                 String[] split = line.split("=");
                 switch (split[0]) {
-                    case "excluded_packages":
-                        excludedPackages = toList(split[1]);
-                        break;
-                    case "premapped_class":
-                        premappedClass = split[1];
-                        break;
-                    case "namespace":
-                        namespace = split[1];
-                        break;
+                    case "excluded_packages" ->
+                            excludedPackages = toList(split[1]);
+                    case "premapped_class" ->
+                            premappedClass = split[1];
+                    case "namespace" ->
+                            namespace = split[1];
                 }
             });
         } catch (IOException e) {
