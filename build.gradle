@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.ancientmc'
+version = '0.1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'commons-io:commons-io:2.18.0'
+    implementation 'net.sf.jopt-simple:jopt-simple:5.0.4'
+    implementation 'org.ow2.asm:asm:9.7.1'
+    implementation 'org.ow2.asm:asm-tree:9.7.1'
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+ext {
+    CLIENT = 'resources/client.jar'
+    INHERITANCE = 'resources/inheritance_map.json'
+    CFG = 'resources/rosetta.cfg'
+    TSRG = 'resources/version.tsrg'
+    IDS = 'resources/ids.csv'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.register('testGenerate', JavaExec) {
+    mainClass = 'com.ancientmc.rosetta.Rosetta'
+    classpath = sourceSets.main.runtimeClasspath
+    args('generate', CFG, CLIENT, INHERITANCE, TSRG, IDS)
+}
