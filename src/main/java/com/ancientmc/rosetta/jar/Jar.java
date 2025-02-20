@@ -27,7 +27,7 @@ public class Jar {
     public List<Method> methods = new ArrayList<>();
     public List<Parameter> params = new ArrayList<>();
 
-    public Jar load(File file, File inheritance, Config config) {
+    private Jar(File file, File inheritance, Config config) {
         try (ZipFile zip = new ZipFile(file)) {
             for (ZipEntry entry : Collections.list(zip.entries())) {
 
@@ -60,8 +60,10 @@ public class Jar {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
 
-        return this;
+    public static Jar load(File file, File inheritance, Config config) {
+        return new Jar(file, inheritance, config);
     }
 
     public static String getSuperParent(File file, String className, String methodName, String methodDesc) {

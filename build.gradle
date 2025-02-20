@@ -7,12 +7,12 @@ version = '0.1.0'
 
 repositories {
     mavenCentral()
+    maven { url = 'https://maven.neoforged.net/' }
 }
 
 dependencies {
     implementation 'com.google.code.gson:gson:2.11.0'
-    implementation 'commons-io:commons-io:2.18.0'
-    implementation 'net.sf.jopt-simple:jopt-simple:5.0.4'
+    implementation 'net.minecraftforge:srgutils:0.5.4'
     implementation 'org.ow2.asm:asm:9.7.1'
     implementation 'org.ow2.asm:asm-tree:9.7.1'
 
@@ -22,10 +22,15 @@ dependencies {
 
 ext {
     CLIENT = 'resources/client.jar'
+    CLIENT_NEW = 'resources/new.jar'
     INHERITANCE = 'resources/inheritance_map.json'
+    INHERITANCE_NEW = 'resources/newinh.json'
     CFG = 'resources/rosetta.cfg'
     TSRG = 'resources/version.tsrg'
+    TSRG_NEW = 'resources/new.tsrg'
+    MATCH = 'resources/match.match'
     IDS = 'resources/ids.csv'
+    IDS_NEW = 'resources/new.csv'
 }
 
 test {
@@ -36,4 +41,10 @@ tasks.register('testGenerate', JavaExec) {
     mainClass = 'com.ancientmc.rosetta.Rosetta'
     classpath = sourceSets.main.runtimeClasspath
     args('generate', CFG, CLIENT, INHERITANCE, TSRG, IDS)
+}
+
+tasks.register('taskUpdate', JavaExec) {
+    mainClass = 'com.ancientmc.rosetta.Rosetta'
+    classpath = sourceSets.main.runtimeClasspath
+    args('update', CFG, CLIENT_NEW, INHERITANCE_NEW, TSRG, IDS, MATCH, TSRG_NEW, IDS_NEW)
 }

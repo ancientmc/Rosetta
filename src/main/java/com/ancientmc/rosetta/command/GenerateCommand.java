@@ -20,8 +20,8 @@ public class GenerateCommand extends Command {
         File tsrg = getFile(3);
         File ids = getFile(4);
 
-        Config config = new Config().load(configFile);
-        Jar jar = new Jar().load(jarFile, inheritance, config);
+        Config config = Config.load(configFile);
+        Jar jar = Jar.load(jarFile, inheritance, config);
 
         GenerateFunction function = new GenerateFunction(jar, config, tsrg, ids);
         function.exec();

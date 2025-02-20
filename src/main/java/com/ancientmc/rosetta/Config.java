@@ -11,27 +11,27 @@ public class Config {
     public String premappedClass;
     public String namespace;
 
-    public Config() { }
+    private Config(List<String> lines) {
+        lines.forEach(line -> {
+            String[] split = line.split("=");
+            switch (split[0]) {
+                case "excluded_packages" ->
+                        excludedPackages = toList(split[1]);
+                case "premapped_class" ->
+                        premappedClass = split[1];
+                case "namespace" ->
+                        namespace = split[1];
+            }
+        });
+    }
 
-    public Config load(File file) {
+    public static Config load(File file) {
         try {
             List<String> lines = Files.readAllLines(file.toPath());
-            lines.forEach(line -> {
-                String[] split = line.split("=");
-                switch (split[0]) {
-                    case "excluded_packages" ->
-                            excludedPackages = toList(split[1]);
-                    case "premapped_class" ->
-                            premappedClass = split[1];
-                    case "namespace" ->
-                            namespace = split[1];
-                }
-            });
+            return new Config(lines);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        return this;
     }
 
     public List<String> toList(String entry) {
