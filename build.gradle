@@ -46,33 +46,36 @@ shadowJar {
     archiveClassifier = 'all'
 }
 
+artifacts {
+    archives shadowJar
+}
+
 publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            group = project.group
-            artifactId = 'rosetta'
-            version = project.version
-            pom {
-                name = artifactId
-                description = 'CLI program to generate and update TSRGv2 deobfuscation mappings between JAR versions.'
-                url = 'https://github.com/ancientmc/rosetta'
-                licenses {
-                    name = 'MIT License'
-                    url = 'https://mit-license.org/'
-                }
-                developers {
-                    developer {
-                        id = 'moist-mason'
-                        name = 'mason'
-                    }
+    publications.register('mavenJava', MavenPublication) {
+        from components.java
+        group = project.group
+        artifactId = 'rosetta'
+        version = project.version
+        pom {
+            name = artifactId
+            description = 'CLI program to generate and update TSRGv2 deobfuscation mappings between JAR versions.'
+            url = 'https://github.com/ancientmc/rosetta'
+            licenses {
+                name = 'MIT License'
+                url = 'https://mit-license.org/'
+            }
+            developers {
+                developer {
+                    id = 'moist-mason'
+                    name = 'mason'
                 }
             }
-            repositories {
-                maven {
-                    name = 'ancientmc-maven'
-                    url = '../ancientmc-maven/'
-                }
-            }
+        }
+    }
+    repositories {
+        maven {
+            name = 'ancientmc-maven'
+            url = '../ancientmc-maven/'
         }
     }
 }
