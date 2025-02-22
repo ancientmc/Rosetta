@@ -14,6 +14,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class GenerateFunction {
@@ -59,12 +60,14 @@ public class GenerateFunction {
         sortedClasses.forEach(cls -> {
             String cid = classIds.get(cls);
             lines.add(String.join(" ", cls.name, getDeobfClass(cls, cid), cid));
+            toPrint("class", cls.name, getDeobfClass(cls, cid), cid);
 
             // Get fields in the currently iterated class
             List<Field> sortedFields = cls.getFields(jar);
             sortedFields.forEach(fld -> {
                 String fid = fieldIds.get(fld);
                 lines.add("\t" + String.join(" ", fld.name, getDeobfField(fld, fid), fid));
+                toPrint("field", fld.name, getDeobfField(fld, fid), fid);
             });
 
             // Get methods in the currently iterated class
@@ -74,6 +77,7 @@ public class GenerateFunction {
                 // We have to deal with inheritance. If a method is inherited, get the id of the root parent. If not, just get the id of the normal method.
                 String mid = method.inherited ? methodIds.get(getSuperMethod(method)) : methodIds.get(method);
                 lines.add("\t" + String.join(" ", method.name, method.desc, getDeobfMethod(method, mid), mid));
+                toPrint("method", method.name + method.desc, getDeobfMethod(method, mid), mid);
 
                 if (!method.params.isEmpty()) {
                     method.params.forEach(param -> {
@@ -81,6 +85,7 @@ public class GenerateFunction {
                                 ? paramIds.get(getSuperMethod(method).params.get(param.index))
                                 : paramIds.get(method.params.get(param.index));
                         lines.add("\t\t" + String.join(" ", Integer.toString(param.index), "o", "p_" + pid, pid));
+                        toPrint("param", "arg" + param.index, "p_" + pid, pid);
                     });
                 }
             });
@@ -126,5 +131,9 @@ public class GenerateFunction {
             return superParent.getMethod(jar, method.name, method.desc);
         }
         return null;
+    }
+
+    public void toPrint(String type, String obf, String mapped, String id) {
+        System.out.println(String.join(" ", type.toUpperCase(Locale.ROOT) + ":", obf, "->", mapped, "\tID:", id));
     }
 }

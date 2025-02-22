@@ -1,11 +1,7 @@
 package com.ancientmc.rosetta.mapping.match;
 
-import com.ancientmc.rosetta.util.RosettaException;
 import com.ancientmc.rosetta.util.Util;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +29,6 @@ public class MatchMethod {
         if (!methodBlock.isEmpty()) { // empty -> just the method line -> no params
             for (String pLine : methodBlock) {
                 if (pLine.startsWith("\t\tma")) {
-                    System.out.println(pLine);
                     String[] split = pLine.split("\t");
                     int oldIndex = Integer.parseInt(split[3]);
                     int newIndex = Integer.parseInt(split[4]);

@@ -73,8 +73,10 @@ public class Jar {
             JsonObject method = methods.getAsJsonObject(methodName + " " + methodDesc);
             if (method.get("override") != null) {
 
-                // Some methods have overrides that are descendants of JDK classes. We want to treat these as having no parents.
-                if (method.get("override").getAsString().contains("java")) {
+                // Treat the following as having no parents:
+                // 1. All constructors (<clinit>, <init>)
+                // 2. Any method whose override is from a JDK class
+                if (method.get("override").getAsString().contains("java") || methodName.endsWith("init>")) {
                     return null;
                 }
                 return method.get("override").getAsString();

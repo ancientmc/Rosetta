@@ -75,29 +75,14 @@ public class Tsrg {
     }
 
     public TsrgClass getIntermediateClass(MatchClass cls) {
-        for (TsrgClass tsrgClass : this.getClasses()) {
-            if (tsrgClass.obf.equals(cls.oldName)) {
-                return tsrgClass;
-            }
-        }
-        return null;
+        return this.classes.stream().filter(tc -> tc.obf.equals(cls.oldName)).findAny().orElse(null);
     }
 
     public TsrgField getIntermediateField(MatchField field) {
-        for (TsrgField tsrgField : this.getFields()) {
-            if (tsrgField.parent.equals(field.oldParent) && tsrgField.obf.equals(field.oldName)) {
-                return tsrgField;
-            }
-        }
-        return null;
+        return this.fields.stream().filter(tf -> tf.parent.equals(field.oldParent) && tf.obf.equals(field.oldName)).findAny().orElse(null);
     }
 
     public TsrgMethod getIntermediateMethod(MatchMethod method) {
-        for (TsrgMethod tsrgMethod : this.methods) {
-            if (tsrgMethod.parent.equals(method.oldParent) && tsrgMethod.obf.equals(method.oldName) && tsrgMethod.desc.equals(method.oldDesc)) {
-                return tsrgMethod;
-            }
-        }
-        return null;
+        return this.methods.stream().filter(tm -> tm.parent.equals(method.oldParent) && tm.obf.equals(method.oldName) && tm.desc.equals(method.oldDesc)).findAny().orElse(null);
     }
 }

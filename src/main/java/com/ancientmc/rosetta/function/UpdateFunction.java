@@ -15,10 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class UpdateFunction {
     private final Config config;
@@ -62,7 +59,7 @@ public class UpdateFunction {
         Map<ClassType, String> newClassIds = getNewClassIds(jar.classes, match, ids);
         Map<Field, String> newFieldIds = getNewFieldIds(jar.fields, match, ids);
         Map<Method, String> newMethodIds = getNewMethodIds(jar.methods, match, ids);
-        Map<Parameter, String> newParamIds = getNewParameterIds(jar.params, match, ids);
+        Map<Parameter, String> newParamIds = getNewParameterIds(jar.params, match, tsrg, ids);
 
         // first line
         lines.add("tsrg2 obf cnf id");
@@ -72,10 +69,12 @@ public class UpdateFunction {
             if (isMatchedClass(cls, match)) {
                 MatchClass oldClass = match.getClass(cls);
                 TsrgClass intermediateClass = tsrg.getIntermediateClass(oldClass);
-                lines.add(String.join(" ", cls.name, intermediateClass.mapped, intermediateClass.id) + "\n");
+                lines.add(String.join(" ", cls.name, intermediateClass.mapped, intermediateClass.id));
+                toPrint("class", cls.name, intermediateClass.mapped, intermediateClass.id);
             } else {
                 String id = newClassIds.get(cls);
-                lines.add(String.join(" ", cls.name, config.namespace + "c_" + id, id) + "\n");
+                lines.add(String.join(" ", cls.name, config.namespace + "c_" + id, id));
+                toPrint("class", cls.name, config.namespace + "c_" + id, id);
             }
 
             List<Field> sortedFields = jar.fields.stream().filter(f -> f.parentName.equals(cls.name)).toList();
@@ -83,68 +82,41 @@ public class UpdateFunction {
                 if (isMatchedField(field, match)) {
                     MatchField oldField = match.getField(field);
                     TsrgField intermediateField = tsrg.getIntermediateField(oldField);
-                    lines.add("\t" + String.join(" ", field.name, intermediateField.mapped, intermediateField.id) + "\n");
+                    lines.add("\t" + String.join(" ", field.name, intermediateField.mapped, intermediateField.id));
+                    toPrint("field", field.name, intermediateField.mapped, intermediateField.id);
                 } else {
                     String id = newFieldIds.get(field);
-                    lines.add("\t" + String.join(" ", field.name, "f_" + id, id) + "\n");
+                    lines.add("\t" + String.join(" ", field.name, "f_" + id, id));
+                    toPrint("field", field.name, "f_" + id, id);
                 }
             }
 
             List<Method> sortedMethods = jar.methods.stream().filter(m -> m.parentName.equals(cls.name)).toList();
             for (Method method : sortedMethods) {
-                String id;
+                String id = "";
                 if (isMatchedMethod(method, match)) {
-                    MatchMethod oldMethod = match.getMethod(method);
-                    TsrgMethod intermediateMethod = tsrg.getIntermediateMethod(oldMethod);
-                    id = intermediateMethod.id;
-                    lines.add("\t" + String.join(" ", method.name, method.desc, intermediateMethod.mapped, id) + "\n");
+                    MatchMethod matchMethod = match.getMethod(method);
+                    TsrgMethod tsrgMethod = tsrg.getIntermediateMethod(matchMethod);
+                    id = tsrgMethod.id;
+                    lines.add("\t" + String.join(" ", method.name, method.desc, tsrgMethod.mapped, id));
+                    addParams(lines, method, tsrgMethod, matchMethod, newParamIds);
                 } else {
                     if (method.inherited) {
                         Method superMethod = getSuperMethod(method);
                         if (isMatchedMethod(superMethod, match)) { // if the method's parent is old
-                            MatchMethod oldSuperMethod = match.getMethod(superMethod);
-                            id = tsrg.getIntermediateMethod(oldSuperMethod).id;
+                            MatchMethod matchedSuperMethod = match.getMethod(superMethod);
+                            TsrgMethod tsrgSuperMethod = tsrg.getIntermediateMethod(matchedSuperMethod);
+                            lines.add("\t" + String.join(" ", method.name, method.desc, tsrgSuperMethod.mapped, tsrgSuperMethod.id));
+                            addParams(lines, method, tsrgSuperMethod, matchedSuperMethod, newParamIds);
                         } else { // if the method's parent id is also new
                             id = newMethodIds.get(superMethod);
+                            lines.add("\t" + String.join(" ", method.name, method.desc, getMappedMethod(method.name, id), id));
+                            addParams(lines, method, newParamIds);
                         }
                     } else {
                         id = newMethodIds.get(method);
-                    }
-                    String mapped = method.name.contains("init>") ? method.name : "m_" + id;
-                    lines.add("\t" + String.join(" ", method.name, method.desc, mapped, id) + "\n");
-
-                }
-
-                // Params
-                if (!method.params.isEmpty()) {
-                    for (int i = 0; i < method.params.size(); i++) {
-                        Parameter param = method.params.get(i);
-                        if (isMatchedMethod(param.method, match)) {
-                            MatchMethod oldMethod = match.getMethod(method);
-                            TsrgMethod intermediateMethod = tsrg.getIntermediateMethod(oldMethod);
-                            if (!intermediateMethod.params.isEmpty()) {
-                                addOldParam(lines, param, oldMethod, intermediateMethod);
-                            } else {
-                                addNewParam(lines, param, newParamIds);
-                            }
-                        } else {
-                            if (param.method.inherited) {
-                                Method superMethod = getSuperMethod(method);
-                                Parameter superParam = superMethod.params.get(param.index);
-                                if (isMatchedMethod(superMethod, match)) {
-                                    MatchMethod oldSuperMethod = match.getMethod(superMethod);
-                                    TsrgMethod superIntermediate = tsrg.getIntermediateMethod(oldSuperMethod);
-                                    if (!superIntermediate.params.isEmpty()) {
-                                        addOldParam(lines, param, oldSuperMethod, superIntermediate);
-                                    } else {
-                                        addNewParam(lines, param, newParamIds);
-                                    }                                } else {
-                                    addNewParam(lines, superParam, newParamIds);
-                                }
-                            } else {
-                                addNewParam(lines, param, newParamIds);
-                            }
-                        }
+                        lines.add("\t" + String.join(" ", method.name, method.desc, getMappedMethod(method.name, id), id));
+                        addParams(lines, method, newParamIds);
                     }
                 }
             }
@@ -156,7 +128,7 @@ public class UpdateFunction {
     public static void write(File tsrg, List<String> lines) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(tsrg))) {
             for (String line : lines) {
-                writer.write(line);
+                writer.write(line + "\n");
             }
             writer.flush();
         } catch (IOException e) {
@@ -169,7 +141,7 @@ public class UpdateFunction {
             writer.write(String.join(",", "classes", Integer.toString(lastClassCounter - 1)) + "\n");
             writer.write(String.join(",", "fields", Integer.toString(lastFieldCounter - 1)) + "\n");
             writer.write(String.join(",", "methods", Integer.toString(lastMethodCounter - 1)) + "\n");
-            writer.write(String.join(",", "params", Integer.toString(lastParamCounter)));
+            writer.write(String.join(",", "params", Integer.toString(lastParamCounter - 1)));
             writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -233,7 +205,7 @@ public class UpdateFunction {
         return newMethods;
     }
 
-    public static Map<Parameter, String> getNewParameterIds(List<Parameter> params, Match match, File ids) throws IOException {
+    public static Map<Parameter, String> getNewParameterIds(List<Parameter> params, Match match, Tsrg tsrg, File ids) throws IOException {
         int counter = getCount(ids, "params") + 1;
         Map<Parameter, String> newParams = new HashMap<>();
 
@@ -241,7 +213,7 @@ public class UpdateFunction {
         // 2) param's method is old but the param is new
         for (Parameter param : params) {
             if ((!isMatchedMethod(param.method, match) && !param.method.inherited) || (isMatchedMethod(param.method, match)
-                    && match.getMethod(param.method).params.stream().noneMatch(p -> p.newIndex == param.index)))  { // fix
+                    && match.getMethod(param.method).params.stream().noneMatch(p -> p.newIndex == param.index)) && !param.method.inherited)  { // fix
                 newParams.put(param, getFormattedId(counter));
                 counter++;
             }
@@ -264,12 +236,40 @@ public class UpdateFunction {
         return new DecimalFormat("00000").format(id);
     }
 
+    public static String getMappedMethod(String name, String id) {
+        return name.endsWith("init>") ? name : "m_" + id;
+    }
+
     public Method getSuperMethod(Method method) {
         ClassType superParent = jar.getClass(method.superParentName);
         if (superParent != null) {
             return superParent.getMethod(jar, method.name, method.desc);
         }
         return null;
+    }
+
+    public void toPrint(String type, String obf, String mapped, String id) {
+        System.out.println(String.join(" ", type.toUpperCase(Locale.ROOT) + ":", obf, "->", mapped, "\tID:", id));
+    }
+
+    // For Matched methods
+    public static void addParams(List<String> lines, Method method, TsrgMethod tsrgMethod, MatchMethod matchMethod, Map<Parameter, String> newParamIds) {
+        if (!method.params.isEmpty()) {
+            for (Parameter param : method.params) {
+                if (!tsrgMethod.params.isEmpty()) {
+                    addOldParam(lines, param, matchMethod, tsrgMethod);
+                } else {
+                    addNewParam(lines, param, newParamIds);
+                }
+            }
+        }
+    }
+
+    // For new methods
+    public static void addParams(List<String> lines, Method method, Map<Parameter, String> newParamIds) {
+        if (!method.params.isEmpty()) {
+            method.params.forEach(p -> addNewParam(lines, p, newParamIds));
+        }
     }
 
     public static void addOldParam(List<String> lines, Parameter param, MatchMethod matchMethod, TsrgMethod tsrgMethod) {

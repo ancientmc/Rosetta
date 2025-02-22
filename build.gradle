@@ -1,9 +1,11 @@
 plugins {
     id 'java'
+    id 'maven-publish'
+    id 'com.gradleup.shadow' version "9.0.0-beta8"
 }
 
 group = 'com.ancientmc'
-version = '0.1.0'
+version = '0.0.9.0' // 0.0.9 because it's unfinished
 
 repositories {
     mavenCentral()
@@ -17,34 +19,60 @@ dependencies {
     implementation 'org.ow2.asm:asm-tree:9.7.1'
 
     testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'net.minecraftforge:mapping-verifier:2.0.8:fatjar'
     testImplementation 'org.junit.jupiter:junit-jupiter'
-}
-
-ext {
-    CLIENT = 'resources/client.jar'
-    CLIENT_NEW = 'resources/new.jar'
-    INHERITANCE = 'resources/inheritance_map.json'
-    INHERITANCE_NEW = 'resources/newinh.json'
-    CFG = 'resources/rosetta.cfg'
-    TSRG = 'resources/version.tsrg'
-    TSRG_NEW = 'resources/new.tsrg'
-    MATCH = 'resources/match.match'
-    IDS = 'resources/ids.csv'
-    IDS_NEW = 'resources/new.csv'
 }
 
 test {
     useJUnitPlatform()
 }
 
-tasks.register('testGenerate', JavaExec) {
-    mainClass = 'com.ancientmc.rosetta.Rosetta'
-    classpath = sourceSets.main.runtimeClasspath
-    args('generate', CFG, CLIENT, INHERITANCE, TSRG, IDS)
+jar {
+    from sourceSets.main.output
+    manifest {
+        attributes (
+            'Specification-Title': 'Rosetta',
+            'Specification-Ventor': 'AncientMC',
+            'Specification-Version': archiveVersion,
+            'Implementation-Title': 'com.ancientmc.rosetta',
+            'Implementation-Vendor': 'AncientMC',
+            'Implementation-Version': archiveVersion,
+        )
+    }
 }
 
-tasks.register('taskUpdate', JavaExec) {
-    mainClass = 'com.ancientmc.rosetta.Rosetta'
-    classpath = sourceSets.main.runtimeClasspath
-    args('update', CFG, CLIENT_NEW, INHERITANCE_NEW, TSRG, IDS, MATCH, TSRG_NEW, IDS_NEW)
+shadowJar {
+    dependsOn jar
+    archiveClassifier = 'all'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            group = project.group
+            artifactId = 'rosetta'
+            version = project.version
+            pom {
+                name = artifactId
+                description = 'CLI program to generate and update TSRGv2 deobfuscation mappings between JAR versions.'
+                url = 'https://github.com/ancientmc/rosetta'
+                licenses {
+                    name = 'MIT License'
+                    url = 'https://mit-license.org/'
+                }
+                developers {
+                    developer {
+                        id = 'moist-mason'
+                        name = 'mason'
+                    }
+                }
+            }
+            repositories {
+                maven {
+                    name = 'ancientmc-maven'
+                    url = '../ancientmc-maven/'
+                }
+            }
+        }
+    }
 }
