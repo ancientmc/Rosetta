@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.ancientmc'
-version = '0.0.9.0' // 0.0.9 because it's unfinished
+version = '0.0.9.3' // 0.0.9 because it's unfinished
 
 repositories {
     mavenCentral()
@@ -28,6 +28,7 @@ test {
 }
 
 jar {
+    archiveClassifier = 'base'
     from sourceSets.main.output
     manifest {
         attributes (
@@ -42,8 +43,8 @@ jar {
 }
 
 shadowJar {
-    dependsOn jar
     archiveClassifier = 'all'
+    dependsOn jar
 }
 
 artifacts {
@@ -61,8 +62,10 @@ publishing {
             description = 'CLI program to generate and update TSRGv2 deobfuscation mappings between JAR versions.'
             url = 'https://github.com/ancientmc/rosetta'
             licenses {
-                name = 'MIT License'
-                url = 'https://mit-license.org/'
+                license {
+                    name = 'MIT License'
+                    url = 'https://mit-license.org/'
+                }
             }
             developers {
                 developer {
