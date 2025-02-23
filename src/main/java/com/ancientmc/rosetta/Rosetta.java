@@ -34,7 +34,7 @@ public class Rosetta {
 
     public static void isArgCountValid(Command command) {
         if (!command.argCountValid()) {
-            throw new RosettaException(command.name);
+            throw new RosettaException(command);
         }
     }
 }
