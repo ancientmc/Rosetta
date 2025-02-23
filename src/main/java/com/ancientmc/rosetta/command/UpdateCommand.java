@@ -7,7 +7,6 @@ import com.ancientmc.rosetta.mapping.match.Match;
 import com.ancientmc.rosetta.mapping.tsrg.Tsrg;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 
 public class UpdateCommand extends Command {
     public UpdateCommand() {

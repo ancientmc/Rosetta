@@ -74,15 +74,15 @@ public class Tsrg {
         return list;
     }
 
-    public TsrgClass getIntermediateClass(MatchClass cls) {
+    public TsrgClass getClass(MatchClass cls) {
         return this.classes.stream().filter(tc -> tc.obf.equals(cls.oldName)).findAny().orElse(null);
     }
 
-    public TsrgField getIntermediateField(MatchField field) {
+    public TsrgField getField(MatchField field) {
         return this.fields.stream().filter(tf -> tf.parent.equals(field.oldParent) && tf.obf.equals(field.oldName)).findAny().orElse(null);
     }
 
-    public TsrgMethod getIntermediateMethod(MatchMethod method) {
+    public TsrgMethod getMethod(MatchMethod method) {
         return this.methods.stream().filter(tm -> tm.parent.equals(method.oldParent) && tm.obf.equals(method.oldName) && tm.desc.equals(method.oldDesc)).findAny().orElse(null);
     }
 }
