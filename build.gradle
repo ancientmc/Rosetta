@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.ancientmc'
-version = '0.1.0'
+version = '0.0.9.4'
 
 repositories {
     mavenCentral()
@@ -20,6 +20,7 @@ dependencies {
 
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'net.minecraftforge:mapping-verifier:2.0.8:fatjar'
+    testImplementation 'net.minecraftforge:srgutils:0.5.4'
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 

@@ -8,6 +8,7 @@ import com.ancientmc.rosetta.jar.type.Method;
 import com.ancientmc.rosetta.jar.type.Parameter;
 import com.ancientmc.rosetta.mapping.match.*;
 import com.ancientmc.rosetta.mapping.tsrg.*;
+import com.ancientmc.rosetta.util.RosettaException;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -49,7 +50,7 @@ public class UpdateFunction extends Function {
             write(newTsrg, lines);
             writeIds(newIds);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RosettaException(e);
         }
     }
 
@@ -216,7 +217,6 @@ public class UpdateFunction extends Function {
                     MatchMethod matchMethod = match.getMethod(param.method);
                     if (!matchMethod.params.isEmpty()) {
                         if (matchMethod.params.stream().noneMatch(mp -> mp.newIndex == param.index)) {
-                            System.out.println("CLASS=" + param.method.parentName + " METHOD=" + param.method.name + " INDEX=" + param.index);
                             newParams.put(param, getFormattedId(counter));
                             counter++;
                         }
@@ -263,10 +263,8 @@ public class UpdateFunction extends Function {
             for (Parameter param : method.params) {
                 MatchParameter matchParam = matchMethod.params.stream().filter(mp -> mp.newIndex == param.index).findAny().orElse(null);
                 if (matchParam != null) {
-                    System.out.println("\tMatched param of index " + param.index);
                     addOldParam(lines, param, matchMethod, tsrgMethod);
                 } else {
-                    System.out.println("\tNew param of index " + param.index);
                     addNewParam(lines, param, newParamIds);
                 }
             }
@@ -284,14 +282,12 @@ public class UpdateFunction extends Function {
         MatchParameter matchParam = matchMethod.getParameter(param.index);
         if (matchParam != null) {
             TsrgParameter tsrgParam = tsrgMethod.getParameter(matchParam.oldIndex);
-            System.out.println("\t\told id is " + tsrgParam.id);
             addLine(lines, "param", param.index + " o", tsrgParam.name, tsrgParam.id);
         }
     }
 
     public static void addNewParam(List<String> lines, Parameter param, Map<Parameter, String> newParamIds) {
         String pid = newParamIds.get(param);
-        System.out.println("creating new id " + pid);
         lines.add("\t\t" + String.join(" ", Integer.toString(param.index), "o", "p_" + pid, pid));
     }
 }

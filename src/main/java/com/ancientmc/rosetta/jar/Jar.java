@@ -5,6 +5,7 @@ import com.ancientmc.rosetta.jar.type.ClassType;
 import com.ancientmc.rosetta.jar.type.Field;
 import com.ancientmc.rosetta.jar.type.Method;
 import com.ancientmc.rosetta.jar.type.Parameter;
+import com.ancientmc.rosetta.util.RosettaException;
 import com.ancientmc.rosetta.util.Util;
 import com.google.gson.JsonObject;
 import org.objectweb.asm.ClassReader;
@@ -58,7 +59,7 @@ public class Jar {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RosettaException(e);
         }
     }
 

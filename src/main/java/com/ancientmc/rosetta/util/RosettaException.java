@@ -18,7 +18,7 @@ public class RosettaException extends RuntimeException {
     }
 
     public RosettaException(Throwable throwable) {
-        throw new RuntimeException(this);
+        throw new RuntimeException(throwable);
     }
 
     public CommandRegistry getRegistry() {

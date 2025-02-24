@@ -32,7 +32,8 @@ public class Util {
     }
 
     public static int getNextMatchClass(List<String> lines, String classLine) {
-        for (int i = lines.indexOf(classLine) + 1; i < lines.size(); i++) {
+        int index = lines.indexOf(classLine);
+        for (int i = index + 1; i < lines.size(); i++) {
             String line = lines.get(i);
             if (line.startsWith("c\tL")) {
                 return i;

@@ -23,6 +23,9 @@ public class Paths {
     public static final String NEW_TSRG = getResource("new.tsrg");
     public static final String NEW_IDS = getResource("new_ids.csv");
 
+    /**
+     * Verify log file
+     */
     public static final String LOG = getResource("verify.log");
 
     public static final String[] GENERATE_ARGS = new String[] {

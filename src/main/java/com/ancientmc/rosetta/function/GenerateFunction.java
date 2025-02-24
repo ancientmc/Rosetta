@@ -7,6 +7,7 @@ import com.ancientmc.rosetta.jar.type.ClassType;
 import com.ancientmc.rosetta.jar.type.Field;
 import com.ancientmc.rosetta.jar.type.Method;
 import com.ancientmc.rosetta.jar.type.Parameter;
+import com.ancientmc.rosetta.util.RosettaException;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -45,7 +46,7 @@ public class GenerateFunction extends Function {
             write(lines);
             writeIds();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RosettaException(e);
         }
     }
 
