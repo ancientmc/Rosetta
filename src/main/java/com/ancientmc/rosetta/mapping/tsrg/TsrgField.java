@@ -32,8 +32,4 @@ public class TsrgField {
 
         return this;
     }
-
-    public TsrgClass getParent(Tsrg tsrg) {
-        return tsrg.classes.stream().filter(c -> c.obf.equals(parent)).findAny().orElse(null);
-    }
 }

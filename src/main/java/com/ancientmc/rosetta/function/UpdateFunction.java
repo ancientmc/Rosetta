@@ -74,7 +74,7 @@ public class UpdateFunction extends Function {
                 addLine(lines, "class", cls.name, tsrgClass.mapped, tsrgClass.id);
             } else {
                 String cid = newClassIds.get(cls);
-                addLine(lines, "class", cls.name, config.namespace + cid, cid);
+                addLine(lines, "class", cls.name, config.namespace + "c_" + cid, cid);
             }
 
             List<Field> sortedFields = jar.fields.stream().filter(f -> f.parentName.equals(cls.name)).toList();
@@ -135,6 +135,7 @@ public class UpdateFunction extends Function {
 
     public static void writeIds(File ids) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(ids))) {
+            writer.write(String.join(",", "type", "counter") + "\n");
             writer.write(String.join(",", "classes", Integer.toString(lastClassCounter - 1)) + "\n");
             writer.write(String.join(",", "fields", Integer.toString(lastFieldCounter - 1)) + "\n");
             writer.write(String.join(",", "methods", Integer.toString(lastMethodCounter - 1)) + "\n");

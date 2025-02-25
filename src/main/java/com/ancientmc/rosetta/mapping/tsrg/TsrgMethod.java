@@ -54,8 +54,4 @@ public class TsrgMethod {
         }
         return null;
     }
-
-    public TsrgClass getParent(Tsrg tsrg) {
-        return tsrg.classes.stream().filter(c -> c.obf.equals(parent)).findAny().orElse(null);
-    }
 }

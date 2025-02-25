@@ -16,8 +16,4 @@ public class TsrgParameter {
         this.id = name.split("_")[1];
         return this;
     }
-
-    public TsrgMethod getParent(Tsrg tsrg) {
-        return tsrg.methods.stream().filter(m -> m.params.contains(this)).findAny().orElse(null);
-    }
 }
