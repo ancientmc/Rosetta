@@ -50,6 +50,9 @@ public class Util {
                     if (!classBlock.get(i).startsWith("\t\tma\t")) {
                         return i;
                     }
+                    if (i == classBlock.indexOf(classBlock.getLast())) {
+                        return classBlock.size();
+                    }
                 }
             }
         }

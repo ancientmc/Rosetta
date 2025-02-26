@@ -59,13 +59,13 @@ public class GenerateFunction extends Function {
         List<ClassType> sortedClasses = jar.classes.stream().filter(c -> config.excludedPackages.stream().noneMatch(c.name::startsWith)).toList();
         sortedClasses.forEach(cls -> {
             String cid = classIds.get(cls);
-            addLine(lines, "class", cls.name, getDeobfClass(cls, cid), cid);
+            addLine(lines, "class", cls.name, getMappedClass(cls, cid), cid);
 
             // Get fields in the currently iterated class
             List<Field> sortedFields = cls.getFields(jar);
             sortedFields.forEach(field -> {
                 String fid = fieldIds.get(field);
-                addLine(lines, "field", field.name, getDeobfField(field, fid), fid);
+                addLine(lines, "field", field.name, getMappedField(field, fid), fid);
             });
 
             // Get methods in the currently iterated class
@@ -74,7 +74,7 @@ public class GenerateFunction extends Function {
 
                 // We have to deal with inheritance. If a method is inherited, get the id of the root parent. If not, just get the id of the normal method.
                 String mid = method.inherited ? methodIds.get(getSuperMethod(method)) : methodIds.get(method);
-                addLine(lines, "method", method.name + " " + method.desc, getDeobfMethod(method, mid), mid);
+                addLine(lines, "method", method.name + " " + method.desc, getMappedMethod(method, mid), mid);
 
                 if (!method.params.isEmpty()) {
                     method.params.forEach(param -> {
@@ -110,15 +110,15 @@ public class GenerateFunction extends Function {
         }
     }
 
-    public String getDeobfClass(ClassType cls, String id) {
+    public String getMappedClass(ClassType cls, String id) {
         return cls.name.contains(config.premappedClass) ? cls.name : config.namespace + "c_" + id;
     }
 
-    public String getDeobfField(Field field, String id) {
+    public String getMappedField(Field field, String id) {
         return field.name.length() <= 2 ? "f_" + id : field.name;
     }
 
-    public String getDeobfMethod(Method method, String id) {
+    public String getMappedMethod(Method method, String id) {
         return method.name.length() <= 2 ? "m_" + id : method.name;
     }
 

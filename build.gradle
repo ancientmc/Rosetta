@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.ancientmc'
-version = '0.0.9.4'
+version = '0.1.0'
 
 repositories {
     mavenCentral()
