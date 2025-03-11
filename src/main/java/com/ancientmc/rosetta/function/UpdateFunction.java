@@ -289,7 +289,6 @@ public class UpdateFunction extends Function {
 
     public static void addNewParam(List<String> lines, Parameter param, Map<Parameter, String> newParamIds) {
         String pid = newParamIds.get(param);
-        lines.add("\t\t" + String.join(" ", Integer.toString(param.index), "o", "p_" + pid, pid));
         addLine(lines, "param", param.index + " o", "p_" + pid, pid, true);
     }
 }
