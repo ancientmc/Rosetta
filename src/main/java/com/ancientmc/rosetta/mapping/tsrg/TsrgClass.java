@@ -20,7 +20,7 @@ public class TsrgClass {
     public TsrgClass setId(File file) {
         try {
             List<String> lines = Files.readAllLines(file.toPath());
-            lines.stream().filter(l -> l.contains(mapped)).findAny()
+            lines.stream().filter(l -> l.contains(mapped + " ")).findAny()
                     .ifPresent(line -> this.id = line.split(" ")[2]);
         } catch (IOException e) {
             throw new RuntimeException(e);

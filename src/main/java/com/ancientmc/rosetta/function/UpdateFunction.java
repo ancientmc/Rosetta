@@ -71,10 +71,10 @@ public class UpdateFunction extends Function {
             if (isMatchedClass(cls, match)) {
                 MatchClass matchClass = match.getClass(cls);
                 TsrgClass tsrgClass = tsrg.getClass(matchClass);
-                addLine(lines, "class", cls.name, tsrgClass.mapped, tsrgClass.id);
+                addLine(lines, "class", cls.name, tsrgClass.mapped, tsrgClass.id, false);
             } else {
                 String cid = newClassIds.get(cls);
-                addLine(lines, "class", cls.name, config.namespace + "c_" + cid, cid);
+                addLine(lines, "class", cls.name, config.namespace + "c_" + cid, cid, true);
             }
 
             List<Field> sortedFields = jar.fields.stream().filter(f -> f.parentName.equals(cls.name)).toList();
@@ -82,10 +82,10 @@ public class UpdateFunction extends Function {
                 if (isMatchedField(field, match)) {
                     MatchField oldField = match.getField(field);
                     TsrgField tsrgField = tsrg.getField(oldField);
-                    addLine(lines, "field", field.name, tsrgField.mapped, tsrgField.id);
+                    addLine(lines, "field", field.name, tsrgField.mapped, tsrgField.id, false);
                 } else {
                     String fid = newFieldIds.get(field);
-                    addLine(lines, "field", field.name, "f_" + fid, fid);
+                    addLine(lines, "field", field.name, "f_" + fid, fid, true);
                 }
             }
 
@@ -97,22 +97,22 @@ public class UpdateFunction extends Function {
                     if (isMatchedMethod(superMethod, match)) {
                         MatchMethod matchSuperMethod = match.getMethod(superMethod);
                         TsrgMethod tsrgSuperMethod = tsrg.getMethod(matchSuperMethod);
-                        addLine(lines, "method", superMethod.name + " " + superMethod.desc, tsrgSuperMethod.mapped, tsrgSuperMethod.id);
+                        addLine(lines, "method", superMethod.name + " " + superMethod.desc, tsrgSuperMethod.mapped, tsrgSuperMethod.id, false);
                         addParams(lines, superMethod, tsrgSuperMethod, matchSuperMethod, newParamIds);
                     } else {
                         mid = newMethodIds.get(superMethod);
-                        addLine(lines, "method", superMethod.name + " " + superMethod.desc, getMappedMethod(superMethod.name, mid), mid);
+                        addLine(lines, "method", superMethod.name + " " + superMethod.desc, getMappedMethod(superMethod.name, mid), mid, true);
                         addParams(lines, superMethod, newParamIds);
                     }
                 } else {
                     if (isMatchedMethod(method, match)) {
                         MatchMethod matchMethod = match.getMethod(method);
                         TsrgMethod tsrgMethod = tsrg.getMethod(matchMethod);
-                        addLine(lines, "method", method.name + " " + method.desc, tsrgMethod.mapped, tsrgMethod.id);
+                        addLine(lines, "method", method.name + " " + method.desc, tsrgMethod.mapped, tsrgMethod.id, false);
                         addParams(lines, method, tsrgMethod, matchMethod, newParamIds);
                     } else {
                         mid = newMethodIds.get(method);
-                        addLine(lines, "method", method.name + " " + method.desc, getMappedMethod(method.name, mid), mid);
+                        addLine(lines, "method", method.name + " " + method.desc, getMappedMethod(method.name, mid), mid, true);
                         addParams(lines, method, newParamIds);
                     }
                 }
@@ -283,12 +283,13 @@ public class UpdateFunction extends Function {
         MatchParameter matchParam = matchMethod.getParameter(param.index);
         if (matchParam != null) {
             TsrgParameter tsrgParam = tsrgMethod.getParameter(matchParam.oldIndex);
-            addLine(lines, "param", param.index + " o", tsrgParam.name, tsrgParam.id);
+            addLine(lines, "param", param.index + " o", tsrgParam.name, tsrgParam.id, false);
         }
     }
 
     public static void addNewParam(List<String> lines, Parameter param, Map<Parameter, String> newParamIds) {
         String pid = newParamIds.get(param);
         lines.add("\t\t" + String.join(" ", Integer.toString(param.index), "o", "p_" + pid, pid));
+        addLine(lines, "param", param.index + " o", "p_" + pid, pid, true);
     }
 }

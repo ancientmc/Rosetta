@@ -24,7 +24,7 @@ public class TsrgField {
             List<String> lines = Files.readAllLines(file.toPath());
             String classLine = lines.stream().filter(l -> l.startsWith(parent + " ")).findAny().orElse(null);
             List<String> classBlock = lines.subList(lines.indexOf(classLine), Util.getNextTsrgClass(lines, classLine));
-            classBlock.stream().filter(l -> l.contains(mapped)).findAny()
+            classBlock.stream().filter(l -> l.contains(mapped + " ")).findAny()
                     .ifPresent(line -> this.id = line.split(" ")[2]);
         } catch (IOException e) {
             throw new RuntimeException(e);
