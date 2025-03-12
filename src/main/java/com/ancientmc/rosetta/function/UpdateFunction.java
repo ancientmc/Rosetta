@@ -66,7 +66,7 @@ public class UpdateFunction extends Function {
         // first line
         lines.add("tsrg2 obf cnf id");
 
-        List<ClassType> sortedClasses = jar.classes.stream().filter(c -> config.excludedPackages.stream().noneMatch(c.name::startsWith)).toList();
+        List<ClassType> sortedClasses = jar.classes.stream().filter(c -> config.excluded.stream().noneMatch(c.name::startsWith)).toList();
         sortedClasses.forEach(cls -> {
             if (isMatchedClass(cls, match)) {
                 MatchClass matchClass = match.getClass(cls);
@@ -108,6 +108,9 @@ public class UpdateFunction extends Function {
                     if (isMatchedMethod(method, match)) {
                         MatchMethod matchMethod = match.getMethod(method);
                         TsrgMethod tsrgMethod = tsrg.getMethod(matchMethod);
+                        if (tsrgMethod.id.equals("00246")) {
+                            System.out.print("test");
+                        }
                         addLine(lines, "method", method.name + " " + method.desc, tsrgMethod.mapped, tsrgMethod.id, false);
                         addParams(lines, method, tsrgMethod, matchMethod, newParamIds);
                     } else {

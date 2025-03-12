@@ -32,7 +32,7 @@ public class Jar {
         try (ZipFile zip = new ZipFile(file)) {
             for (ZipEntry entry : Collections.list(zip.entries())) {
 
-                if(!entry.getName().endsWith(".class") && !entry.getName().contains(config.excludedPackages.stream().findAny().orElseThrow())) {
+                if(!entry.getName().endsWith(".class") && !entry.getName().contains(config.excluded.stream().findAny().orElseThrow())) {
                     continue;
                 }
                 ClassReader reader = new ClassReader(zip.getInputStream(entry));

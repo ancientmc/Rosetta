@@ -50,7 +50,7 @@ public class Util {
                     if (!classBlock.get(i).startsWith("\t\tma\t")) {
                         return i;
                     }
-                    if (i == classBlock.indexOf(classBlock.getLast())) {
+                    if (i == classBlock.size() - 1) {
                         return classBlock.size();
                     }
                 }

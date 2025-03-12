@@ -56,7 +56,7 @@ public class GenerateFunction extends Function {
         // first line
         lines.add("tsrg2 obf cnf id");
 
-        List<ClassType> sortedClasses = jar.classes.stream().filter(c -> config.excludedPackages.stream().noneMatch(c.name::startsWith)).toList();
+        List<ClassType> sortedClasses = jar.classes.stream().filter(c -> config.excluded.stream().noneMatch(c.name::startsWith)).toList();
         sortedClasses.forEach(cls -> {
             String cid = classIds.get(cls);
             addLine(lines, "class", cls.name, getMappedClass(cls, cid), cid);
@@ -111,7 +111,7 @@ public class GenerateFunction extends Function {
     }
 
     public String getMappedClass(ClassType cls, String id) {
-        return cls.name.contains(config.premappedClass) ? cls.name : config.namespace + "c_" + id;
+        return cls.name.contains(config.premapped) ? cls.name : config.namespace + "c_" + id;
     }
 
     public String getMappedField(Field field, String id) {
