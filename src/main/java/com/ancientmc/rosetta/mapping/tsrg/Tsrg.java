@@ -38,36 +38,40 @@ public class Tsrg {
 
     public List<TsrgClass> getClasses() {
         List<TsrgClass> list = new ArrayList<>();
-        this.mapping.getClasses().forEach(cls -> list.add(new TsrgClass(cls.getOriginal(), cls.getMapped()).setId(file)));
+        this.mapping.getClasses().forEach(cls -> list.add(new TsrgClass(cls.getOriginal(), cls.getMapped(), file)));
         return list;
     }
 
     public List<TsrgField> getFields() {
         List<TsrgField> list = new ArrayList<>();
+
         this.mapping.getClasses().forEach(cls -> {
             if (!cls.getFields().isEmpty()) {
-                cls.getFields().forEach(fld -> list.add(new TsrgField(fld.getOriginal(), fld.getMapped(), cls.getOriginal()).setId(file)));
+                cls.getFields().forEach(fld -> list.add(new TsrgField(fld.getOriginal(), fld.getMapped(), cls.getOriginal(), file)));
             }
         });
+
         return list;
     }
 
     public List<TsrgMethod> getMethods() {
         List<TsrgMethod> list = new ArrayList<>();
+
         this.mapping.getClasses().forEach(cls -> {
             if (!cls.getMethods().isEmpty()) {
-                cls.getMethods().forEach(mtd -> list.add(new TsrgMethod(mtd.getOriginal(), mtd.getMapped(), cls.getOriginal(), mtd.getDescriptor())
-                        .setId(file).setParameters(mtd.getParameters())));
+                cls.getMethods().forEach(mtd -> list.add(new TsrgMethod(mtd.getOriginal(), mtd.getMapped(), cls.getOriginal(), mtd.getDescriptor(), file, mtd.getParameters())));
             }
         });
+
         return list;
     }
 
     public List<TsrgParameter> getParams() {
         List<TsrgParameter> list = new ArrayList<>();
+
         this.methods.forEach(mtd -> {
-            if (!mtd.params.isEmpty()) {
-                list.addAll(mtd.params);
+            if (!mtd.getParams().isEmpty()) {
+                list.addAll(mtd.getParams());
             }
         });
 
@@ -75,14 +79,14 @@ public class Tsrg {
     }
 
     public TsrgClass getClass(MatchClass cls) {
-        return this.classes.stream().filter(tc -> tc.obf.equals(cls.oldName)).findAny().orElse(null);
+        return this.classes.stream().filter(tc -> tc.obf().equals(cls.oldName())).findAny().orElse(null);
     }
 
     public TsrgField getField(MatchField field) {
-        return this.fields.stream().filter(tf -> tf.parent.equals(field.oldParent) && tf.obf.equals(field.oldName)).findAny().orElse(null);
+        return this.fields.stream().filter(tf -> tf.parent().equals(field.oldParent()) && tf.obf().equals(field.oldName())).findAny().orElse(null);
     }
 
     public TsrgMethod getMethod(MatchMethod method) {
-        return this.methods.stream().filter(tm -> tm.parent.equals(method.oldParent) && tm.obf.equals(method.oldName) && tm.desc.equals(method.oldDesc)).findAny().orElse(null);
+        return this.methods.stream().filter(tm -> tm.parent().equals(method.oldParent()) && tm.obf().equals(method.oldName()) && tm.desc().equals(method.oldDesc())).findAny().orElse(null);
     }
 }

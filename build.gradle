@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.ancientmc'
-version = '0.1.3'
+version = '0.2.0'
 
 repositories {
     mavenCentral()
@@ -33,8 +33,9 @@ jar {
     from sourceSets.main.output
     manifest {
         attributes (
+            'Main-Class': 'com.ancientmc.rosetta.Rosetta',
             'Specification-Title': 'Rosetta',
-            'Specification-Ventor': 'AncientMC',
+            'Specification-Vendor': 'AncientMC',
             'Specification-Version': archiveVersion,
             'Implementation-Title': 'com.ancientmc.rosetta',
             'Implementation-Vendor': 'AncientMC',

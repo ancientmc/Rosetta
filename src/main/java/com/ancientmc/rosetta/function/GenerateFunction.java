@@ -42,7 +42,6 @@ public class GenerateFunction extends Function {
     public void exec() {
         try {
             List<String> lines = getLines();
-
             write(lines);
             writeIds();
         } catch (IOException e) {
@@ -56,16 +55,17 @@ public class GenerateFunction extends Function {
         // first line
         lines.add("tsrg2 obf cnf id");
 
-        List<ClassType> sortedClasses = jar.classes.stream().filter(c -> config.excluded.stream().noneMatch(c.name::startsWith)).toList();
+        List<ClassType> sortedClasses = jar.classes.stream().filter(c -> config.excluded.stream().noneMatch(c.name()::startsWith)).toList();
         sortedClasses.forEach(cls -> {
             String cid = classIds.get(cls);
-            addLine(lines, "class", cls.name, getMappedClass(cls, cid), cid);
+            addLine(lines, "class", cls.name(), getMappedClass(cls, cid), cid);
 
             // Get fields in the currently iterated class
             List<Field> sortedFields = cls.getFields(jar);
+
             sortedFields.forEach(field -> {
                 String fid = fieldIds.get(field);
-                addLine(lines, "field", field.name, getMappedField(field, fid), fid);
+                addLine(lines, "field", field.name(), getMappedField(field, fid), fid);
             });
 
             // Get methods in the currently iterated class
@@ -73,15 +73,16 @@ public class GenerateFunction extends Function {
             sortedMethods.forEach(method -> {
 
                 // We have to deal with inheritance. If a method is inherited, get the id of the root parent. If not, just get the id of the normal method.
-                String mid = method.inherited ? methodIds.get(getSuperMethod(method)) : methodIds.get(method);
-                addLine(lines, "method", method.name + " " + method.desc, getMappedMethod(method, mid), mid);
+                Method superMethod = method.getSuperMethod(jar);
+                String mid = method.inherited() ? methodIds.get(superMethod) : methodIds.get(method);
+                addLine(lines, "method", method.name() + " " + method.desc(), getMappedMethod(method, mid), mid);
 
-                if (!method.params.isEmpty()) {
-                    method.params.forEach(param -> {
-                        String pid = method.inherited
-                                ? paramIds.get(getSuperMethod(method).params.get(param.index))
-                                : paramIds.get(method.params.get(param.index));
-                        addLine(lines, "param", Integer.toString(param.index) + " o", "p_" + pid, pid);
+                if (!method.getParams().isEmpty()) {
+                    method.getParams().forEach(param -> {
+                        String pid = method.inherited()
+                                ? paramIds.get(superMethod.getParams().get(param.index()))
+                                : paramIds.get(method.getParams().get(param.index()));
+                        addLine(lines, "param", param.index() + " o", "p_" + pid, pid);
                     });
                 }
             });
@@ -102,31 +103,23 @@ public class GenerateFunction extends Function {
     public void writeIds() throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(ids))) {
             writer.write(String.join(",", "type", "counter") + "\n");
-            writer.write(String.join(",", "classes", Integer.toString(classIds.size())) + "\n");
-            writer.write(String.join(",", "fields", Integer.toString(fieldIds.size())) + "\n");
-            writer.write(String.join(",", "methods", Integer.toString(methodIds.size())) + "\n");
-            writer.write(String.join(",", "params", Integer.toString(paramIds.size())) + "\n");
+            writer.write(String.join(",", "classes", Ids.classCounter + "\n"));
+            writer.write(String.join(",", "fields", Ids.fieldCounter + "\n"));
+            writer.write(String.join(",", "methods", Ids.methodCounter + "\n"));
+            writer.write(String.join(",", "params", Ids.paramCounter + "\n"));
             writer.flush();
         }
     }
 
     public String getMappedClass(ClassType cls, String id) {
-        return cls.name.contains(config.premapped) ? cls.name : config.namespace + "c_" + id;
+        return cls.name().contains(config.premapped) ? cls.name() : config.namespace + "c_" + id;
     }
 
     public String getMappedField(Field field, String id) {
-        return field.name.length() <= 2 ? "f_" + id : field.name;
+        return field.name().length() <= 2 ? "f_" + id : field.name();
     }
 
     public String getMappedMethod(Method method, String id) {
-        return method.name.length() <= 2 ? "m_" + id : method.name;
-    }
-
-    public Method getSuperMethod(Method method) {
-        ClassType superParent = jar.getClass(method.superParentName);
-        if (superParent != null) {
-            return superParent.getMethod(jar, method.name, method.desc);
-        }
-        return null;
+        return method.name().length() <= 2 ? "m_" + id : method.name();
     }
 }

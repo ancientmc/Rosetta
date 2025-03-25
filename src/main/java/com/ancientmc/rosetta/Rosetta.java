@@ -4,32 +4,24 @@ import com.ancientmc.rosetta.command.*;
 import com.ancientmc.rosetta.util.RosettaException;
 
 public class Rosetta {
-    private static final CommandRegistry REGISTRY = new CommandRegistry();
-
     public static void main(String[] args) {
         String name = args[0];
+        CommandRegistry registry = new CommandRegistry();
 
-        if (!REGISTRY.isValidCommand(name)) {
+        if (!registry.isValidCommand(name)) {
             throw new RosettaException(name);
         }
 
-        if (name.equals("generate")) {
-            Command command = new GenerateCommand().setArgs(args);
-            isArgCountValid(command);
-            command.exec();
+        switch (name) {
+            case "generate" -> exec(new GenerateCommand().setArgs(args));
+            case "update" -> exec(new UpdateCommand().setArgs(args));
+            case "help" -> exec(new HelpCommand().setArgs(args));
         }
+    }
 
-        if (name.equals("update")) {
-            Command command = new UpdateCommand().setArgs(args);
-            isArgCountValid(command);
-            command.exec();
-        }
-
-        if (name.equals("help")) {
-            Command command = new HelpCommand().setArgs(args);
-            isArgCountValid(command);
-            command.exec();
-        }
+    public static void exec(Command command) {
+        isArgCountValid(command);
+        command.exec();
     }
 
     public static void isArgCountValid(Command command) {

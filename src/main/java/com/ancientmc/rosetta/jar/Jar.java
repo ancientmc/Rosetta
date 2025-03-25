@@ -49,12 +49,11 @@ public class Jar {
                     int count = Type.getArgumentTypes(methodNode.desc).length;
                     String superParent = getSuperParent(inheritance, classNode.name, methodNode.name, methodNode.desc);
                     boolean inherited = superParent != null;
-
-                    Method method = new Method(methodNode.name, classNode.name, methodNode.desc, superParent, inherited).setParameters(count);
+                    Method method = new Method(methodNode.name, classNode.name, methodNode.desc, superParent, inherited, count);
                     methods.add(method);
 
-                    if (!method.params.isEmpty()) {
-                        params.addAll(method.params);
+                    if (!method.getParams().isEmpty()) {
+                        params.addAll(method.getParams());
                     }
                 }
             }
@@ -70,8 +69,10 @@ public class Jar {
     public static String getSuperParent(File file, String className, String methodName, String methodDesc) {
         JsonObject json = Util.getJson(file);
         JsonObject methods = json.getAsJsonObject(className).getAsJsonObject("methods");
+
         if (methods != null) {
             JsonObject method = methods.getAsJsonObject(methodName + " " + methodDesc);
+
             if (method.get("override") != null) {
 
                 // Treat the following as having no parents:
@@ -80,13 +81,15 @@ public class Jar {
                 if (method.get("override").getAsString().contains("java") || methodName.endsWith("init>")) {
                     return null;
                 }
+
                 return method.get("override").getAsString();
             }
         }
+
         return null;
     }
 
     public ClassType getClass(String name) {
-        return classes.stream().filter(cls -> cls.name.equals(name)).findAny().orElse(null);
+        return classes.stream().filter(cls -> cls.name().equals(name)).findAny().orElse(null);
     }
 }

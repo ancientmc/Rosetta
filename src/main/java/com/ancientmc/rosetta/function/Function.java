@@ -1,18 +1,6 @@
 package com.ancientmc.rosetta.function;
 
-import com.ancientmc.rosetta.Config;
-
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.FileAttribute;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -22,6 +10,8 @@ public abstract class Function {
      * Main execution method for this function.
      */
     public abstract void exec();
+
+    public abstract List<String> getLines() throws IOException;
 
     /**
      * Adds a given entry to the TSRG line list. Called in the Generate Task since all entries are new.
@@ -69,17 +59,13 @@ public abstract class Function {
      */
     public static String getIndent(String type) {
         String indent = "";
+
         switch (type) {
-            case "class" -> {
-                indent = "";
-            }
-            case "field", "method" -> {
-                indent = "\t";
-            }
-            case "param" -> {
-                indent = "\t\t";
-            }
+            case "class" -> indent = "";
+            case "field", "method" -> indent = "\t";
+            case "param" -> indent = "\t\t";
         }
+
         return indent;
     }
 }

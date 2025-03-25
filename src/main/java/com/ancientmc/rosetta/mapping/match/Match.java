@@ -52,7 +52,7 @@ public class Match {
             List<MatchField> fields = new ArrayList<>();
             List<String> matchLines = Files.readAllLines(file.toPath());
             this.classes.forEach(cls -> {
-                String classLine = matchLines.stream().filter(line -> line.startsWith("c\tL" + cls.oldName + ";")).findAny().orElse(null);
+                String classLine = matchLines.stream().filter(line -> line.startsWith("c\tL" + cls.oldName() + ";")).findAny().orElse(null);
                 List<String> classBlock = matchLines.subList(matchLines.indexOf(classLine) + 1, Util.getNextMatchClass(matchLines, classLine));
 
                 classBlock.forEach(line -> {
@@ -60,7 +60,7 @@ public class Match {
                         String[] split = line.split("\t");
                         String oldName = split[2].substring(0, split[2].indexOf(";;")); // <field_name>;;<descriptor> -> <field_name>
                         String newName = split[3].substring(0, split[3].indexOf(";;"));
-                        fields.add(new MatchField(cls.oldName, cls.newName, oldName, newName));
+                        fields.add(new MatchField(cls.oldName(), cls.newName(), oldName, newName));
                     }
                 });
             });
@@ -77,7 +77,7 @@ public class Match {
         try {
             List<String> matchLines = Files.readAllLines(file.toPath());
             this.classes.forEach(cls -> {
-                String classLine = matchLines.stream().filter(line -> line.startsWith("c\tL" + cls.oldName + ";")).findAny().orElse(null);
+                String classLine = matchLines.stream().filter(line -> line.startsWith("c\tL" + cls.oldName() + ";")).findAny().orElse(null);
                 List<String> classBlock = matchLines.subList(matchLines.indexOf(classLine) + 1, Util.getNextMatchClass(matchLines, classLine));
 
                 classBlock.forEach(line -> {
@@ -89,7 +89,7 @@ public class Match {
                         String newDesc = split[3].substring(split[3].indexOf('('));
 
 
-                        methods.add(new MatchMethod(cls.oldName, cls.newName, oldName, newName, oldDesc, newDesc).setParams(classBlock, line));
+                        methods.add(new MatchMethod(cls.oldName(), cls.newName(), oldName, newName, oldDesc, newDesc, classBlock, line));
                     }
                 });
             });
@@ -103,8 +103,8 @@ public class Match {
         List<MatchParameter> params = new ArrayList<>();
 
         for (MatchMethod method : this.methods) {
-            if (!method.params.isEmpty()) {
-                params.addAll(method.params);
+            if (!method.getParams().isEmpty()) {
+                params.addAll(method.getParams());
             }
         }
 
@@ -112,14 +112,26 @@ public class Match {
     }
 
     public MatchClass getClass(ClassType cls) {
-        return classes.stream().filter(c -> c.newName.equals(cls.name)).findAny().orElse(null);
+        return classes.stream().filter(c -> c.newName().equals(cls.name())).findAny().orElse(null);
     }
 
     public MatchField getField(Field field) {
-        return fields.stream().filter(f -> f.newParent.equals(field.parentName) && f.newName.equals(field.name)).findAny().orElse(null);
+        return fields.stream().filter(f -> f.newParent().equals(field.parentName()) && f.newName().equals(field.name())).findAny().orElse(null);
     }
 
     public MatchMethod getMethod(Method method) {
-        return methods.stream().filter(m -> m.newParent.equals(method.parentName) && m.newName.equals(method.name) && m.newDesc.equals(method.desc)).findAny().orElse(null);
+        return methods.stream().filter(m -> m.newParent().equals(method.parentName()) && m.newName().equals(method.name()) && m.newDesc().equals(method.desc())).findAny().orElse(null);
+    }
+
+    public boolean isMatchedClass(ClassType cls) {
+        return classes.stream().anyMatch(mc -> mc.newName().equals(cls.name()));
+    }
+
+    public boolean isMatchedField(Field field) {
+        return fields.stream().anyMatch(mf -> mf.newName().equals(field.name()) && mf.newParent().equals(field.parentName()));
+    }
+
+    public boolean isMatchedMethod(Method method) {
+        return methods.stream().anyMatch(mm -> mm.newName().equals(method.name()) && mm.newParent().equals(method.parentName()) && mm.newDesc().equals(method.desc()));
     }
 }

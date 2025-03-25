@@ -6,6 +6,9 @@ import com.ancientmc.rosetta.jar.Jar;
 
 import java.io.File;
 
+/**
+ * Command for generating a new TSRG file.
+ */
 public class GenerateCommand extends Command {
 
     public GenerateCommand() {

@@ -5,26 +5,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
-public class TsrgClass {
-    public String obf;
-    public String mapped;
-    public String id;
-    public List<TsrgMethod> methods;
-    public List<TsrgField> fields;
-
-    public TsrgClass(String obf, String mapped) {
-        this.obf = obf;
-        this.mapped = mapped;
-    }
-
-    public TsrgClass setId(File file) {
+public record TsrgClass(String obf, String mapped, File file) {
+    public String getId() {
         try {
             List<String> lines = Files.readAllLines(file.toPath());
-            lines.stream().filter(l -> l.contains(mapped + " ")).findAny()
-                    .ifPresent(line -> this.id = line.split(" ")[2]);
+            String line = lines.stream().filter(l -> l.contains(mapped + " ")).findAny().orElse(null);
+
+            if (line != null) {
+                return line.split(" ")[2];
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return this;
+        return null;
     }
 }

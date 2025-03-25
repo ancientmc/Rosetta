@@ -2,6 +2,9 @@ package com.ancientmc.rosetta.command;
 
 import com.ancientmc.rosetta.util.RosettaException;
 
+/**
+ * Command that prints help messages, AKA the syntax of the command.
+ */
 public class HelpCommand extends Command {
     public HelpCommand() {
         super("help");
