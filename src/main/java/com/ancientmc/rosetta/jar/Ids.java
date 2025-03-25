@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -165,5 +166,18 @@ public class Ids {
 
     public static String getFormattedId(int id) {
         return new DecimalFormat("00000").format(id);
+    }
+
+    /**
+     * @return the type names and their associated counter as a hash map.
+     */
+    public static Map<String, Integer> getIdCounters() {
+        Map<String, Integer> counters = new LinkedHashMap<>();
+        counters.put("classes", classCounter);
+        counters.put("fields", fieldCounter);
+        counters.put("methods", methodCounter);
+        counters.put("params", paramCounter);
+
+        return counters;
     }
 }

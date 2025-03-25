@@ -1,17 +1,71 @@
 package com.ancientmc.rosetta.function;
 
+import com.ancientmc.rosetta.jar.Ids;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public abstract class Function {
 
     /**
-     * Main execution method for this function.
+     * Main execution method for this function. It writes the TSRG data and then the ID csv.
      */
-    public abstract void exec();
+    public void exec(File tsrg, File ids) {
+        try {
+            List<String> lines = getLines();
+            writeTsrg(tsrg, lines);
+            writeIds(ids);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    /**
+     * Retrieves the lines to be written to the TSRG file.
+     * @return The lines.
+     * @throws IOException exception.
+     */
     public abstract List<String> getLines() throws IOException;
+
+    /**
+     * Writes the lines to the given TSRG file.
+     * @param tsrg The TSRG file.
+     * @param lines The lines to be written.
+     */
+    public void writeTsrg(File tsrg, List<String> lines) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(tsrg))) {
+            for (String line : lines) {
+                writer.write(line + "\n");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Writes the ID counters to the ID csv.
+     * @param ids the ID csv.
+     */
+    public void writeIds(File ids) {
+        Map<String, Integer> counters = Ids.getIdCounters();
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(ids))) {
+            writer.write("type, counter\n");
+
+            for (Map.Entry<String, Integer> counter : counters.entrySet()) {
+                writer.write(String.join(",", counter.getKey(), counter.getValue() + "\n"));
+            }
+
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Adds a given entry to the TSRG line list. Called in the Generate Task since all entries are new.

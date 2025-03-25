@@ -9,12 +9,8 @@ import com.ancientmc.rosetta.jar.type.Method;
 import com.ancientmc.rosetta.jar.type.Parameter;
 import com.ancientmc.rosetta.mapping.match.*;
 import com.ancientmc.rosetta.mapping.tsrg.*;
-import com.ancientmc.rosetta.util.RosettaException;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 
 public class UpdateFunction extends Function {
@@ -47,18 +43,11 @@ public class UpdateFunction extends Function {
         this.newParamIds = Ids.getNewParameterIds(jar.params, match, oldIds);
     }
 
-    @Override
     public void exec() {
-        try {
-            List<String> lines = getLines();
-            write(newTsrg, lines);
-            writeIds(newIds);
-        } catch (IOException e) {
-            throw new RosettaException(e);
-        }
+        super.exec(newTsrg, newIds);
     }
 
-    public List<String> getLines() throws IOException {
+    public List<String> getLines() {
         List<String> lines = new ArrayList<>();
 
         // first line
@@ -113,30 +102,6 @@ public class UpdateFunction extends Function {
         });
 
         return lines;
-    }
-
-    public static void write(File tsrg, List<String> lines) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(tsrg))) {
-            for (String line : lines) {
-                writer.write(line + "\n");
-            }
-            writer.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void writeIds(File ids) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(ids))) {
-            writer.write(String.join(",", "type", "counter") + "\n");
-            writer.write(String.join(",", "classes", Integer.toString(Ids.classCounter - 1)) + "\n");
-            writer.write(String.join(",", "fields", Integer.toString(Ids.fieldCounter - 1)) + "\n");
-            writer.write(String.join(",", "methods", Integer.toString(Ids.methodCounter - 1)) + "\n");
-            writer.write(String.join(",", "params", Integer.toString(Ids.paramCounter - 1)));
-            writer.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static String getMappedMethod(String name, String id) {

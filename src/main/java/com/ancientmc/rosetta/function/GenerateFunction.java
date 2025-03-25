@@ -7,11 +7,8 @@ import com.ancientmc.rosetta.jar.type.ClassType;
 import com.ancientmc.rosetta.jar.type.Field;
 import com.ancientmc.rosetta.jar.type.Method;
 import com.ancientmc.rosetta.jar.type.Parameter;
-import com.ancientmc.rosetta.util.RosettaException;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,13 +37,7 @@ public class GenerateFunction extends Function {
     }
 
     public void exec() {
-        try {
-            List<String> lines = getLines();
-            write(lines);
-            writeIds();
-        } catch (IOException e) {
-            throw new RosettaException(e);
-        }
+        super.exec(tsrg, ids);
     }
 
     public List<String> getLines() throws IOException {
@@ -57,19 +48,19 @@ public class GenerateFunction extends Function {
 
         List<ClassType> sortedClasses = jar.classes.stream().filter(c -> config.excluded.stream().noneMatch(c.name()::startsWith)).toList();
         sortedClasses.forEach(cls -> {
+            List<Field> sortedFields = cls.getFields(jar);
+            List<Method> sortedMethods = cls.getMethods(jar);
+
             String cid = classIds.get(cls);
             addLine(lines, "class", cls.name(), getMappedClass(cls, cid), cid);
 
-            // Get fields in the currently iterated class
-            List<Field> sortedFields = cls.getFields(jar);
-
+            // Add fields in the currently iterated class
             sortedFields.forEach(field -> {
                 String fid = fieldIds.get(field);
                 addLine(lines, "field", field.name(), getMappedField(field, fid), fid);
             });
 
-            // Get methods in the currently iterated class
-            List<Method> sortedMethods = cls.getMethods(jar);
+            // Add methods in the currently iterated class
             sortedMethods.forEach(method -> {
 
                 // We have to deal with inheritance. If a method is inherited, get the id of the root parent. If not, just get the id of the normal method.
@@ -89,26 +80,6 @@ public class GenerateFunction extends Function {
         });
 
         return lines;
-    }
-
-    public void write(List<String> lines) throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(tsrg))) {
-            for (String line : lines) {
-                writer.write(line + "\n");
-            }
-            writer.flush();
-        }
-    }
-
-    public void writeIds() throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(ids))) {
-            writer.write(String.join(",", "type", "counter") + "\n");
-            writer.write(String.join(",", "classes", Ids.classCounter + "\n"));
-            writer.write(String.join(",", "fields", Ids.fieldCounter + "\n"));
-            writer.write(String.join(",", "methods", Ids.methodCounter + "\n"));
-            writer.write(String.join(",", "params", Ids.paramCounter + "\n"));
-            writer.flush();
-        }
     }
 
     public String getMappedClass(ClassType cls, String id) {
