@@ -23,15 +23,15 @@ public class Config {
     /** The package namespace that intermediate classes are put into. */
     public String namespace;
 
-    /** The minimum character length for a method or field to be recognized as obfuscated. */
-    public int minObfChars;
+    /** The maximum character length for a method or field to be recognized as obfuscated. */
+    public int maxObfChars;
 
     public Config(File configFile) {
         JsonObject config = Util.getJson(configFile);
         excluded = getArray(config, "excluded");
         premapped = getArray(config, "premapped");
         namespace = config.get("namespace").getAsString();
-        minObfChars = config.get("min_obf_chars").getAsInt();
+        maxObfChars = config.get("max_obf_chars").getAsInt();
     }
 
     private List<String> getArray(JsonObject config, String name) {

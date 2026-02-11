@@ -2,5 +2,5 @@
   "excluded": [],
   "premapped": [],
   "namespace": "com/mojang/rubydung/src/",
-  "min_obf_chars": 20
+  "max_obf_chars": 20
 }

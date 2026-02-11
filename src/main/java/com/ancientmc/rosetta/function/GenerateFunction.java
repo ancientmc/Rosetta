@@ -111,7 +111,7 @@ public class GenerateFunction extends Function {
 
     public TsrgField getTsrgField(Field field) {
         String id = fieldIds.get(field);
-        String mapped = field.getName().length() <= config.minObfChars ? "f_" + id : field.getName();
+        String mapped = field.getName().length() <= config.maxObfChars ? "f_" + id : field.getName();
         return new TsrgField(field.getName(), mapped, id);
     }
 
@@ -134,6 +134,6 @@ public class GenerateFunction extends Function {
             return method.getName(); // all descendants of libraries or the JDK should not be obfuscated.
         }
 
-        return method.getName().length() <= config.minObfChars ? "m_" + mid : method.getName();
+        return method.getName().length() <= config.maxObfChars ? "m_" + mid : method.getName();
     }
 }
