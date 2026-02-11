@@ -8,12 +8,10 @@ import com.ancientmc.rosetta.jar.type.Field;
 import com.ancientmc.rosetta.jar.type.Method;
 import com.ancientmc.rosetta.jar.type.Parameter;
 import com.ancientmc.rosetta.mapping.tsrg.Tsrg;
-import com.ancientmc.rosetta.mapping.tsrg.type.TsrgClass;
-import com.ancientmc.rosetta.mapping.tsrg.type.TsrgField;
-import com.ancientmc.rosetta.mapping.tsrg.type.TsrgMethod;
-import com.ancientmc.rosetta.mapping.tsrg.type.TsrgType;
+import com.ancientmc.rosetta.mapping.tsrg.type.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +31,8 @@ public class GenerateFunction extends Function {
     private final IdSet<Method> methodIds;
     private final IdSet<Parameter> paramIds;
 
+    private int lineIndex = -1;
+
     public GenerateFunction(Jar jar, Config config, File tsrgFile, File idCsv) {
         this.jar = jar;
         this.config = config;
@@ -45,34 +45,62 @@ public class GenerateFunction extends Function {
         this.paramIds = IdSet.createFresh(jar.getParams().filtered(p -> !p.getParent().isInherited()));
     }
 
+    public void callIdWriter() throws IOException {
+        super.writeIds(idCsv, classIds, fieldIds, methodIds, paramIds);
+    }
+
     @Override
     public Tsrg buildTsrg() {
-        int lineIndex = -1;
+        System.out.println(paramIds.map.size());
+
         List<Tsrg.Line<? extends TsrgType>> lines = new ArrayList<>();
 
         for (ClassType cls : jar.getClasses()) {
             lineIndex++;
-            addClass(lineIndex, lines, cls);
+            addClass(lines, cls);
         }
 
         return new Tsrg(tsrgFile, lines);
     }
 
-    public void addClass(int lineIndex, List<Tsrg.Line<? extends TsrgType>> lines, ClassType cls) {
+    public void addClass(List<Tsrg.Line<? extends TsrgType>> lines, ClassType cls) {
         TsrgClass tsrgCls = getTsrgClass(cls);
         lines.add(lineIndex, new Tsrg.Line<>(tsrgCls));
+        System.out.print(tsrgCls.toLine());
 
         for (Field field : cls.getFields()) {
             lineIndex++;
             TsrgField tsrgFld = getTsrgField(field);
             lines.add(lineIndex, new Tsrg.Line<>(tsrgFld));
+            System.out.print(tsrgFld.toLine());
         }
 
         for (Method method : cls.getMethods()) {
             lineIndex++;
-            TsrgMethod tsrgMtd = getTsrgMethod(method);
+            Method superMethod = getSuperMethod(method);
+            TsrgMethod tsrgMtd = getTsrgMethod(method, superMethod);
             lines.add(lineIndex, new Tsrg.Line<>(tsrgMtd));
+            System.out.print(tsrgMtd.toLine());
+
+            if (method.hasParams()) {
+                for (Parameter param : method.getParams()) {
+                    lineIndex++;
+                    TsrgParameter tsrgParam = getTsrgParameter(param, method, superMethod);
+                    lines.add(lineIndex, new Tsrg.Line<>(tsrgParam));
+                    System.out.print(tsrgParam.toLine());
+                }
+            }
         }
+    }
+
+    public Method getSuperMethod(Method child) {
+        ClassType superParent = jar.getClass(child.getSuperParentName());
+
+        if (superParent != null) {
+            return superParent.getMethod(child.getName(), child.getDesc());
+        }
+
+        return null;
     }
 
     public TsrgClass getTsrgClass(ClassType cls) {
@@ -87,12 +115,18 @@ public class GenerateFunction extends Function {
         return new TsrgField(field.getName(), mapped, id);
     }
 
-    public TsrgMethod getTsrgMethod(Method method) {
-        Method superMethod = jar.getClasses().get(method.getSuperParentName())
-                .getMethod(method.getName(), method.getDesc());
+    public TsrgMethod getTsrgMethod(Method method, Method superMethod) {
         String mid = method.isInherited() ? methodIds.get(superMethod) : methodIds.get(method);
         String mapped = getMappedMethod(method, mid);
         return new TsrgMethod(method.getName(), method.getDesc(), mapped, mid);
+    }
+
+    public TsrgParameter getTsrgParameter(Parameter param, Method method, Method superMethod) {
+        String pid = param.getParent().isInherited()
+                ? paramIds.get(superMethod.getParam(param.getIndex()))
+                : paramIds.get(method.getParam(param.getIndex()));
+        String name = "p_" + pid;
+        return new TsrgParameter(param.getIndex(), name, pid);
     }
 
     public String getMappedMethod(Method method, String mid) {

@@ -39,6 +39,6 @@ public final class TsrgMethod implements TsrgType {
 
     @Override
     public String toLine() {
-        return getIndent() + " " + obf + " " + desc + " " + mapped + " " + id;
+        return getIndent() + String.join(" ", obf, desc, mapped, id) + "\n";
     }
 }

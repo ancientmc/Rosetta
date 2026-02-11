@@ -11,6 +11,7 @@ public final class Method implements Type, ChildType<ClassType> {
     private final String desc;
     private final InheritanceStatus inheritanceStatus;
     private final int argCount;
+    private final List<Parameter> params = new ArrayList<>();
 
     public Method(String name, ClassType parent, String superParentName, String desc, InheritanceStatus inheritanceStatus, int argCount) {
         this.name = name;
@@ -19,6 +20,7 @@ public final class Method implements Type, ChildType<ClassType> {
         this.desc = desc;
         this.inheritanceStatus = inheritanceStatus;
         this.argCount = argCount;
+        this.setParams();
     }
 
     @Override
@@ -38,7 +40,7 @@ public final class Method implements Type, ChildType<ClassType> {
 
     @Override
     public String getTypeSetId() {
-        return name + " " + desc;
+        return String.join(".", parent.getTypeSetId(), name, desc);
     }
 
     public String getSuperParentName() {
@@ -58,22 +60,24 @@ public final class Method implements Type, ChildType<ClassType> {
     }
 
     public boolean hasParams() {
-        return !getParams().isEmpty();
+        return argCount > 0;
+    }
+
+    public void setParams() {
+        if (argCount > 0) {
+            for (int i = 0; i < argCount; i++) {
+                Parameter param = new Parameter(i, this);
+                params.add(param);
+            }
+        }
     }
 
     public List<Parameter> getParams() {
-        List<Parameter> params = new ArrayList<>();
-
-        if (argCount == 0) { // no params
-            return Collections.emptyList();
-        }
-
-        for (int i = 0; i < argCount; i++) {
-            Parameter param = new Parameter(i, this);
-            params.add(param);
-        }
-
         return params;
+    }
+
+    public Parameter getParam(int index) {
+        return getParams().get(index);
     }
 
     /** Represents the method's inheritance source, or if it's even inherited at all. */

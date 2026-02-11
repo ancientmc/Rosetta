@@ -28,7 +28,7 @@ public final class Field implements Type, ChildType<ClassType> {
 
     @Override
     public String getTypeSetId() {
-        return name;
+        return String.join(".", parent.getTypeSetId(), name);
     }
 
     public String getDesc() {

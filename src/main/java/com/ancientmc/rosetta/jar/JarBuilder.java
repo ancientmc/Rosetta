@@ -25,10 +25,10 @@ public class JarBuilder {
     private final JsonObject inheritance;
     private final Config config;
 
-    public TypeSet<ClassType> classes;
-    public TypeSet<Field> fields;
-    public TypeSet<Method> methods;
-    public TypeSet<Parameter> params;
+    public TypeSet<ClassType> classes = new TypeSet<>();
+    public TypeSet<Field> fields = new TypeSet<>();
+    public TypeSet<Method> methods = new TypeSet<>();
+    public TypeSet<Parameter> params = new TypeSet<>();
 
     public JarBuilder(File jarFile, JsonObject inheritance, Config config) {
         this.jarFile = jarFile;
@@ -131,7 +131,7 @@ public class JarBuilder {
     }
 
     private InheritanceStatus getInheritanceStatus(String superParent) {
-        if (superParent == null) {
+        if (superParent == null || superParent.equals("java/lang/Object")) {
             return InheritanceStatus.NONE;
         } else if (superParent.contains("java/") || superParent.contains("org/lwjgl/") || superParent.contains("com/paulscode/")) {
             return InheritanceStatus.CLASSPATH;

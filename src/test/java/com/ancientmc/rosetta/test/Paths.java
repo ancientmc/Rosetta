@@ -8,7 +8,7 @@ public class Paths {
     /*
      * Generate TSRG
      */
-    public static final String CONFIG = getResource("rosetta.cfg");
+    public static final String CONFIG = getResource("rosetta.json");
     public static final String OLD_JAR = getResource("old.jar");
     public static final String OLD_INHERITANCE = getResource("old_inheritance.json") ;
     public static final String OLD_TSRG = getResource("old.tsrg");
@@ -29,7 +29,12 @@ public class Paths {
     public static final String LOG = getResource("verify.log");
 
     public static final String[] GENERATE_ARGS = new String[] {
-            "generate", CONFIG, OLD_JAR, OLD_INHERITANCE, OLD_TSRG, OLD_IDS
+            "--generate",
+            "--config", CONFIG,
+            "--jar", OLD_JAR,
+            "--inheritance", OLD_INHERITANCE,
+            "--tsrg", OLD_TSRG,
+            "--ids", OLD_IDS
     };
 
     public static final String[] UPDATE_ARGS = new String[] {

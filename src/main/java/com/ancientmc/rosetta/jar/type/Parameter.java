@@ -9,6 +9,10 @@ public final class Parameter implements Type, ChildType<Method> {
         this.parent = parent;
     }
 
+    public int getIndex() {
+        return index;
+    }
+
     @Override
     public String getName() {
         return "arg" + index; // do this because param names don't really matter at the bytecode level.
@@ -26,6 +30,6 @@ public final class Parameter implements Type, ChildType<Method> {
 
     @Override
     public String getTypeSetId() {
-        return getName();
+        return String.join(".", parent.getTypeSetId(), getName());
     }
 }

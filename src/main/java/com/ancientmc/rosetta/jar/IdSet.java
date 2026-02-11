@@ -5,6 +5,7 @@ import com.ancientmc.rosetta.jar.type.TypeSet;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -28,11 +29,11 @@ public class IdSet<T extends Type> {
      * @param <T> The given data type.
      */
     public static <T extends Type> IdSet<T> createFresh(TypeSet<T> set) {
-        Map<T, String> map = new HashMap<>();
+        Map<T, String> map = new LinkedHashMap<>();
 
-        for (T type : set) {
-            int i = set.indexOf(type);
-            String id = getFormattedId(i);
+        for (int i = 0; i < set.size(); i++) {
+            T type = set.get(i);
+            String id = getFormattedId(i + 1);
             map.put(type, id);
         }
 
