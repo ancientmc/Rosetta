@@ -1,19 +1,53 @@
 package com.ancientmc.rosetta.jar.type;
 
-import com.ancientmc.rosetta.jar.Jar;
+/**
+ * Java class type.
+ */
+public final class ClassType implements Type {
+    private final String name;
+    private final String parentName;
 
-import java.util.List;
+    private TypeSet<Field> fields;
+    private TypeSet<Method> methods;
 
-public record ClassType(String name, String parentName) {
-    public List<Field> getFields(Jar jar) {
-        return jar.fields.stream().filter(f -> f.parentName().equals(this.name)).toList();
+    public ClassType(String name, String parentName) {
+        this.name = name;
+        this.parentName = parentName;
     }
 
-    public List<Method> getMethods(Jar jar) {
-        return jar.methods.stream().filter(m -> m.parentName().equals(this.name)).toList();
+    public void setChildren(TypeSet<Field> fields, TypeSet<Method> methods) {
+        this.fields = fields;
+        this.methods = methods;
     }
 
-    public Method getMethod(Jar jar, String name, String desc) {
-        return getMethods(jar).stream().filter(m -> m.name().equals(name) && m.desc().equals(desc)).findAny().orElse(null);
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getParentName() {
+        return parentName;
+    }
+
+    @Override
+    public String getTypeSetId() {
+        return name;
+    }
+
+    public TypeSet<Field> getFields() {
+        return fields;
+    }
+
+    public TypeSet<Method> getMethods() {
+        return methods;
+    }
+
+    public Field getField(String name) {
+        return fields.get(name);
+    }
+
+    public Method getMethod(String name, String desc) {
+        return methods.get(name + " " + desc);
     }
 }

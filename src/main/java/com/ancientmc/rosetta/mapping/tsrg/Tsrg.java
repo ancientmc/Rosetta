@@ -1,92 +1,41 @@
 package com.ancientmc.rosetta.mapping.tsrg;
 
-import com.ancientmc.rosetta.mapping.match.MatchClass;
-import com.ancientmc.rosetta.mapping.match.MatchField;
-import com.ancientmc.rosetta.mapping.match.MatchMethod;
-import net.minecraftforge.srgutils.IMappingFile;
+import com.ancientmc.rosetta.mapping.tsrg.type.TsrgType;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.nio.file.Files;
 import java.util.List;
 
 public class Tsrg {
-    private final IMappingFile mapping;
+    private static final String HEADER = "tsrg2 obf cnf id\n";
     private final File file;
-    public List<TsrgClass> classes;
-    public List<TsrgField> fields;
-    public List<TsrgMethod> methods;
-    public List<TsrgParameter> params;
+    private final List<Line<? extends TsrgType>> lines;
 
-    private Tsrg(IMappingFile mapping, File file) {
-        this.mapping = mapping;
+    public Tsrg(File file, List<Line<? extends TsrgType>> lines) {
         this.file = file;
-        this.classes = getClasses();
-        this.fields = getFields();
-        this.methods = getMethods();
-        this.params = getParams();
+        this.lines = lines;
     }
 
-    public static Tsrg load(File file) {
-        try {
-            IMappingFile mapping = IMappingFile.load(file);
-            return new Tsrg(mapping, file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public record Line<T extends TsrgType>(T type) {
+
+        @Override
+        public String toString() {
+            return type.toLine();
         }
     }
 
-    public List<TsrgClass> getClasses() {
-        List<TsrgClass> list = new ArrayList<>();
-        this.mapping.getClasses().forEach(cls -> list.add(new TsrgClass(cls.getOriginal(), cls.getMapped(), file)));
-        return list;
-    }
+    public void write() throws IOException {
+        try (BufferedWriter writer = Files.newBufferedWriter(file.toPath())) {
+            writer.write(HEADER);
+            writer.flush();
 
-    public List<TsrgField> getFields() {
-        List<TsrgField> list = new ArrayList<>();
-
-        this.mapping.getClasses().forEach(cls -> {
-            if (!cls.getFields().isEmpty()) {
-                cls.getFields().forEach(fld -> list.add(new TsrgField(fld.getOriginal(), fld.getMapped(), cls.getOriginal(), file)));
+            for (Line<? extends TsrgType> line : lines) {
+                writer.write(line.toString());
+                writer.flush();
             }
-        });
-
-        return list;
-    }
-
-    public List<TsrgMethod> getMethods() {
-        List<TsrgMethod> list = new ArrayList<>();
-
-        this.mapping.getClasses().forEach(cls -> {
-            if (!cls.getMethods().isEmpty()) {
-                cls.getMethods().forEach(mtd -> list.add(new TsrgMethod(mtd.getOriginal(), mtd.getMapped(), cls.getOriginal(), mtd.getDescriptor(), file, mtd.getParameters())));
-            }
-        });
-
-        return list;
-    }
-
-    public List<TsrgParameter> getParams() {
-        List<TsrgParameter> list = new ArrayList<>();
-
-        this.methods.forEach(mtd -> {
-            if (!mtd.getParams().isEmpty()) {
-                list.addAll(mtd.getParams());
-            }
-        });
-
-        return list;
-    }
-
-    public TsrgClass getClass(MatchClass cls) {
-        return this.classes.stream().filter(tc -> tc.obf().equals(cls.oldName())).findAny().orElse(null);
-    }
-
-    public TsrgField getField(MatchField field) {
-        return this.fields.stream().filter(tf -> tf.parent().equals(field.oldParent()) && tf.obf().equals(field.oldName())).findAny().orElse(null);
-    }
-
-    public TsrgMethod getMethod(MatchMethod method) {
-        return this.methods.stream().filter(tm -> tm.parent().equals(method.oldParent()) && tm.obf().equals(method.oldName()) && tm.desc().equals(method.oldDesc())).findAny().orElse(null);
+        }
     }
 }
+

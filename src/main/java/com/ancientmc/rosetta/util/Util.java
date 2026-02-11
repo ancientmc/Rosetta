@@ -17,7 +17,7 @@ public class Util {
             JsonElement element = JsonParser.parseReader(reader);
             return element.getAsJsonObject();
         } catch (IOException e) {
-            throw new RosettaException(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -31,31 +31,4 @@ public class Util {
         return lines.size(); // returned after everything's parsed.
     }
 
-    public static int getNextMatchClass(List<String> lines, String classLine) {
-        int index = lines.indexOf(classLine);
-        for (int i = index + 1; i < lines.size(); i++) {
-            String line = lines.get(i);
-            if (line.startsWith("c\tL")) {
-                return i;
-            }
-        }
-        return lines.size();
-    }
-
-    public static int getNextMatchMethod(List<String> classBlock, String methodLine) {
-        int index = classBlock.indexOf(methodLine);
-        if (!(classBlock.getLast().equals(methodLine))) {
-            if (classBlock.get(index + 1).startsWith("\t\tma\t")) { // method attribute AKA parameter
-                for (int i = index + 1; i < classBlock.size(); i++) {
-                    if (!classBlock.get(i).startsWith("\t\tma\t")) {
-                        return i;
-                    }
-                    if (i == classBlock.size() - 1) {
-                        return classBlock.size();
-                    }
-                }
-            }
-        }
-        return index;
-    }
 }

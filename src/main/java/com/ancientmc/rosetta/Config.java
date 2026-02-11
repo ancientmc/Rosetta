@@ -1,47 +1,62 @@
 package com.ancientmc.rosetta;
 
+import com.ancientmc.rosetta.util.Util;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * JSON file for configuring Rosetta.
+ * @author moist-mason
+ */
 public class Config {
+
+    /** List of packages that determine which classes are excluded from parsing. */
     public List<String> excluded;
-    public String premapped;
+
+    /** List of classes that are excluded from being given intermediate class names. */
+    public List<String> premapped;
+
+    /** The package namespace that intermediate classes are put into. */
     public String namespace;
 
-    private Config(List<String> lines) {
-        lines.forEach(line -> {
-            String[] split = line.split("=");
-            switch (split[0]) {
-                case "excluded" ->
-                        excluded = toList(split[1]);
-                case "premapped" ->
-                        premapped = split[1];
-                case "namespace" ->
-                        namespace = split[1];
-            }
-        });
+    /** The minimum character length for a method or field to be recognized as obfuscated. */
+    public int minObfChars;
+
+    public Config(File configFile) {
+        JsonObject config = Util.getJson(configFile);
+        excluded = getArray(config, "excluded");
+        premapped = getArray(config, "premapped");
+        namespace = config.get("namespace").getAsString();
+        minObfChars = config.get("min_obf_chars").getAsInt();
     }
 
-    public static Config load(File file) {
-        try {
-            List<String> lines = Files.readAllLines(file.toPath());
-            return new Config(lines);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    private List<String> getArray(JsonObject config, String name) {
+        List<String> list = new ArrayList<>();
+        JsonArray array = config.getAsJsonArray(name);
+        array.forEach(e -> list.add(e.getAsString()));
+        return list;
     }
 
-    public List<String> toList(String entry) {
-        String bracketless = entry.substring(entry.indexOf('[') + 1, entry.indexOf(']'));
-        String[] split = bracketless.split(",");
-        if (split.length > 0) {
-            return Arrays.asList(split);
-        } else {
-            return Collections.singletonList(""); // blank if no exclusions are present.
+    /**
+     * @return {@code true} if the input data is an excluded element.
+     */
+    public boolean isExcluded(String data) {
+        for (String e : excluded) {
+            return e.contains(data);
         }
+
+        return false;
+    }
+
+
+    /**
+     * @return {@code true} if the input data is a premapped element.
+     */
+    public boolean isPremapped(String data) {
+        return premapped.contains(data);
     }
 }
