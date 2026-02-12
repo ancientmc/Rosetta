@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Tsrg {
@@ -13,17 +14,11 @@ public class Tsrg {
     private final File file;
     private final List<Line<? extends TsrgType>> lines;
     private final List<TsrgClass> classes;
-    private final List<TsrgField> fields;
-    private final List<TsrgMethod> methods;
-    private final List<TsrgParameter> params;
 
-    public Tsrg(TsrgBuilder builder) {
-        this.file = builder.file;
-        this.lines = builder.lines;
-        this.classes = builder.classes;
-        this.fields = builder.fields;
-        this.methods = builder.methods;
-        this.params = builder.params;
+    public Tsrg(File file, List<Line<? extends TsrgType>> lines, List<TsrgClass> classes) {
+        this.file = file;
+        this.lines = lines;
+        this.classes = classes;
     }
 
     public record Line<T extends TsrgType>(T type) {
@@ -43,15 +38,15 @@ public class Tsrg {
     }
 
     public List<TsrgField> getFields() {
+        List<TsrgField> fields = new LinkedList<>();
+        classes.forEach(cls -> fields.addAll(cls.getFields()));
         return fields;
     }
 
     public List<TsrgMethod> getMethods() {
+        List<TsrgMethod> methods = new LinkedList<>();
+        classes.forEach(cls -> methods.addAll(cls.getMethods()));
         return methods;
-    }
-
-    public List<TsrgParameter> getParams() {
-        return params;
     }
 
     public void write() throws IOException {

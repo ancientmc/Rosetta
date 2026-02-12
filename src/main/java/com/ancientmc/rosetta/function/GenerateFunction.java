@@ -8,7 +8,6 @@ import com.ancientmc.rosetta.jar.type.Field;
 import com.ancientmc.rosetta.jar.type.Method;
 import com.ancientmc.rosetta.jar.type.Parameter;
 import com.ancientmc.rosetta.mapping.tsrg.Tsrg;
-import com.ancientmc.rosetta.mapping.tsrg.TsrgBuilder;
 import com.ancientmc.rosetta.mapping.tsrg.type.*;
 
 import java.io.File;
@@ -53,47 +52,43 @@ public class GenerateFunction extends Function {
     public Tsrg buildTsrg() {
         List<Tsrg.Line<? extends TsrgType>> lines = new LinkedList<>();
         List<TsrgClass> tsrgClasses = new LinkedList<>();
-        List<TsrgField> tsrgFields = new LinkedList<>();
-        List<TsrgMethod> tsrgMethods = new LinkedList<>();
-        List<TsrgParameter> tsrgParams = new LinkedList<>();
 
         for (ClassType cls : jar.getClasses()) {
-            buildClass(lines, cls, tsrgClasses, tsrgFields, tsrgMethods, tsrgParams);
+            buildClass(lines, cls, tsrgClasses);
         }
 
-        return new TsrgBuilder()
-                .file(tsrgFile)
-                .lines(lines)
-                .members(tsrgClasses, tsrgFields, tsrgMethods, tsrgParams)
-                .build();
+        return new Tsrg(tsrgFile, lines, tsrgClasses);
     }
 
-    public void buildClass(List<Tsrg.Line<? extends TsrgType>> lines, ClassType cls, List<TsrgClass> tsrgClasses, List<TsrgField> tsrgFields,
-                           List<TsrgMethod> tsrgMethods, List<TsrgParameter> tsrgParams) {
+    public void buildClass(List<Tsrg.Line<? extends TsrgType>> lines, ClassType cls, List<TsrgClass> tsrgClasses) {
+        List<TsrgField> childTsrgFields = new LinkedList<>();
+        List<TsrgMethod> childTsrgMethods = new LinkedList<>();
+
         TsrgClass tsrgCls = getTsrgClass(cls);
-        tsrgClasses.add(tsrgCls);
         lines.add(new Tsrg.Line<>(tsrgCls));
 
         for (Field field : cls.getFields()) {
             TsrgField tsrgFld = getTsrgField(field, tsrgCls);
-            tsrgFields.add(tsrgFld);
+            childTsrgFields.add(tsrgFld);
             lines.add(new Tsrg.Line<>(tsrgFld));
         }
 
         for (Method method : cls.getMethods()) {
             Method superMethod = jar.getSuperMethod(method);
             TsrgMethod tsrgMtd = getTsrgMethod(method, superMethod, tsrgCls);
-            tsrgMethods.add(tsrgMtd);
+            childTsrgMethods.add(tsrgMtd);
             lines.add(new Tsrg.Line<>(tsrgMtd));
 
             if (method.hasParams()) {
                 for (Parameter param : method.getParams()) {
                     TsrgParameter tsrgParam = getTsrgParameter(param, method, superMethod, tsrgMtd);
-                    tsrgParams.add(tsrgParam);
                     lines.add(new Tsrg.Line<>(tsrgParam));
                 }
             }
         }
+
+        tsrgCls.setChildren(childTsrgFields, childTsrgMethods);
+        tsrgClasses.add(tsrgCls);
     }
 
     public TsrgClass getTsrgClass(ClassType cls) {
