@@ -32,11 +32,6 @@ public class GenerateFunction extends Function {
     private final IdSet<Method> methodIds;
     private final IdSet<Parameter> paramIds;
 
-    private final List<TsrgClass> tsrgClasses = new LinkedList<>();
-    private final List<TsrgField> tsrgFields = new LinkedList<>();
-    private final List<TsrgMethod> tsrgMethods = new LinkedList<>();
-    private final List<TsrgParameter> tsrgParams = new LinkedList<>();
-
     public GenerateFunction(Jar jar, Config config, File tsrgFile, File idCsv) {
         this.jar = jar;
         this.config = config;
@@ -57,9 +52,13 @@ public class GenerateFunction extends Function {
     @Override
     public Tsrg buildTsrg() {
         List<Tsrg.Line<? extends TsrgType>> lines = new LinkedList<>();
+        List<TsrgClass> tsrgClasses = new LinkedList<>();
+        List<TsrgField> tsrgFields = new LinkedList<>();
+        List<TsrgMethod> tsrgMethods = new LinkedList<>();
+        List<TsrgParameter> tsrgParams = new LinkedList<>();
 
         for (ClassType cls : jar.getClasses()) {
-            addClass(lines, cls);
+            buildClass(lines, cls, tsrgClasses, tsrgFields, tsrgMethods, tsrgParams);
         }
 
         return new TsrgBuilder()
@@ -69,7 +68,8 @@ public class GenerateFunction extends Function {
                 .build();
     }
 
-    public void addClass(List<Tsrg.Line<? extends TsrgType>> lines, ClassType cls) {
+    public void buildClass(List<Tsrg.Line<? extends TsrgType>> lines, ClassType cls, List<TsrgClass> tsrgClasses, List<TsrgField> tsrgFields,
+                           List<TsrgMethod> tsrgMethods, List<TsrgParameter> tsrgParams) {
         TsrgClass tsrgCls = getTsrgClass(cls);
         tsrgClasses.add(tsrgCls);
         lines.add(new Tsrg.Line<>(tsrgCls));
