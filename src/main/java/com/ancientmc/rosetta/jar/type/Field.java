@@ -16,6 +16,7 @@ public final class Field implements Type, ChildType<ClassType> {
         return name;
     }
 
+
     @Override
     public ClassType getParent() {
         return parent;
@@ -26,12 +27,12 @@ public final class Field implements Type, ChildType<ClassType> {
         return parent.getName();
     }
 
+    public String getDesc() {
+        return desc;
+    }
+
     @Override
     public String getTypeSetId() {
         return String.join(".", parent.getTypeSetId(), name);
-    }
-
-    public String getDesc() {
-        return desc;
     }
 }

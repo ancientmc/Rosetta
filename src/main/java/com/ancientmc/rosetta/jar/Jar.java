@@ -1,7 +1,6 @@
 package com.ancientmc.rosetta.jar;
 
 import com.ancientmc.rosetta.jar.type.*;
-import com.ancientmc.rosetta.jar.type.ClassType;
 
 /**
  * Representation of a Java JAR file. More specifically, this is a representation of the Minecraft JAR file.
@@ -40,5 +39,15 @@ public final class Jar {
 
     public ClassType getClass(String id) {
         return classes.get(id);
+    }
+
+    public Method getSuperMethod(Method child) {
+        ClassType superParent = getClass(child.getSuperParentName());
+
+        if (superParent == null) {
+            return null;
+        }
+
+        return superParent.getMethod(child.getName(), child.getDesc());
     }
 }

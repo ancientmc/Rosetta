@@ -4,7 +4,6 @@ import com.ancientmc.rosetta.jar.type.Type;
 import com.ancientmc.rosetta.jar.type.TypeSet;
 
 import java.text.DecimalFormat;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

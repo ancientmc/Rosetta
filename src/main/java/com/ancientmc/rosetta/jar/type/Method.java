@@ -1,7 +1,6 @@
 package com.ancientmc.rosetta.jar.type;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public final class Method implements Type, ChildType<ClassType> {

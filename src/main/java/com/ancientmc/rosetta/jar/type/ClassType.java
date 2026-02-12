@@ -43,10 +43,6 @@ public final class ClassType implements Type {
         return methods;
     }
 
-    public Field getField(String name) {
-        return fields.get(name);
-    }
-
     public Method getMethod(String name, String desc) {
         String id = String.join(".", getTypeSetId(), name, desc);
         return methods.get(id);

@@ -1,7 +1,6 @@
 package com.ancientmc.rosetta.mapping.tsrg.type;
 
 public sealed interface TsrgType permits TsrgClass, TsrgField, TsrgMethod, TsrgParameter {
-
     String getObf();
 
     String getMapped();
@@ -10,5 +9,6 @@ public sealed interface TsrgType permits TsrgClass, TsrgField, TsrgMethod, TsrgP
 
     String getIndent();
 
-    String toLine();
+    @Override
+    String toString();
 }

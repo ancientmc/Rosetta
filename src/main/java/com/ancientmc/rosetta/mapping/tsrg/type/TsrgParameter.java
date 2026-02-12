@@ -1,13 +1,15 @@
 package com.ancientmc.rosetta.mapping.tsrg.type;
 
-public final class TsrgParameter implements TsrgType {
+public final class TsrgParameter implements TsrgType, TsrgChildType<TsrgMethod> {
     private final int index;
     private final String name;
+    private final TsrgMethod parent;
     private final String id;
 
-    public TsrgParameter(int index, String name, String id) {
+    public TsrgParameter(int index, String name, TsrgMethod parent, String id) {
         this.index = index;
         this.name = name;
+        this.parent = parent;
         this.id = id;
     }
 
@@ -26,6 +28,11 @@ public final class TsrgParameter implements TsrgType {
     }
 
     @Override
+    public TsrgMethod getParent() {
+        return parent;
+    }
+
+    @Override
     public String getId() {
         return id;
     }
@@ -36,10 +43,9 @@ public final class TsrgParameter implements TsrgType {
         return "\t\t";
     }
 
-
     // \t\t# o name id\n
     @Override
-    public String toLine() {
+    public String toString() {
         return getIndent() + String.join(" ", Integer.toString(index), getObf(), name, id) + "\n";
     }
 }

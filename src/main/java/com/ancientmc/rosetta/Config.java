@@ -15,16 +15,16 @@ import java.util.List;
 public class Config {
 
     /** List of packages that determine which classes are excluded from parsing. */
-    public List<String> excluded;
+    public final List<String> excluded;
 
     /** List of classes that are excluded from being given intermediate class names. */
-    public List<String> premapped;
+    public final List<String> premapped;
 
     /** The package namespace that intermediate classes are put into. */
-    public String namespace;
+    public final String namespace;
 
     /** The maximum character length for a method or field to be recognized as obfuscated. */
-    public int maxObfChars;
+    public final int maxObfChars;
 
     public Config(File configFile) {
         JsonObject config = Util.getJson(configFile);

@@ -25,10 +25,10 @@ public class JarBuilder {
     private final JsonObject inheritance;
     private final Config config;
 
-    public TypeSet<ClassType> classes = new TypeSet<>();
-    public TypeSet<Field> fields = new TypeSet<>();
-    public TypeSet<Method> methods = new TypeSet<>();
-    public TypeSet<Parameter> params = new TypeSet<>();
+    public final TypeSet<ClassType> classes = new TypeSet<>();
+    public final TypeSet<Field> fields = new TypeSet<>();
+    public final TypeSet<Method> methods = new TypeSet<>();
+    public final TypeSet<Parameter> params = new TypeSet<>();
 
     public JarBuilder(File jarFile, JsonObject inheritance, Config config) {
         this.jarFile = jarFile;

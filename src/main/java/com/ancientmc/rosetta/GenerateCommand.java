@@ -1,6 +1,5 @@
 package com.ancientmc.rosetta;
 
-
 import com.ancientmc.rosetta.function.GenerateFunction;
 import com.ancientmc.rosetta.jar.Jar;
 import com.ancientmc.rosetta.jar.JarBuilder;

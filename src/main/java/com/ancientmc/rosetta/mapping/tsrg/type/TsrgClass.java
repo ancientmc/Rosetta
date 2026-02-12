@@ -32,7 +32,7 @@ public final class TsrgClass implements TsrgType {
     }
 
     @Override
-    public String toLine() {
-        return getIndent() + obf + " " + mapped + " " + getId() + "\n";
+    public String toString() {
+        return getIndent() + String.join(" ", obf, mapped, id) + "\n";
     }
 }
