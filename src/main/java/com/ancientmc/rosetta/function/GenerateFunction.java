@@ -51,7 +51,6 @@ public class GenerateFunction extends Function {
 
     @Override
     public Tsrg buildTsrg() {
-        System.out.println(paramIds.map.size());
 
         List<Tsrg.Line<? extends TsrgType>> lines = new ArrayList<>();
 
@@ -97,9 +96,6 @@ public class GenerateFunction extends Function {
         ClassType superParent = jar.getClass(child.getSuperParentName());
 
         if (superParent != null) {
-            if (child.getName().equals("tileChanged")) {
-                System.out.println("STOP");
-            }
             return superParent.getMethod(child.getName(), child.getDesc());
         }
 
