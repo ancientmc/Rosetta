@@ -66,13 +66,13 @@ public class GenerateFunction extends Function {
     public void addClass(List<Tsrg.Line<? extends TsrgType>> lines, ClassType cls) {
         TsrgClass tsrgCls = getTsrgClass(cls);
         lines.add(lineIndex, new Tsrg.Line<>(tsrgCls));
-        System.out.print(tsrgCls.toLine());
+        //System.out.print(tsrgCls.toLine());
 
         for (Field field : cls.getFields()) {
             lineIndex++;
             TsrgField tsrgFld = getTsrgField(field);
             lines.add(lineIndex, new Tsrg.Line<>(tsrgFld));
-            System.out.print(tsrgFld.toLine());
+            //System.out.print(tsrgFld.toLine());
         }
 
         for (Method method : cls.getMethods()) {
@@ -80,14 +80,14 @@ public class GenerateFunction extends Function {
             Method superMethod = getSuperMethod(method);
             TsrgMethod tsrgMtd = getTsrgMethod(method, superMethod);
             lines.add(lineIndex, new Tsrg.Line<>(tsrgMtd));
-            System.out.print(tsrgMtd.toLine());
+            //System.out.print(tsrgMtd.toLine());
 
             if (method.hasParams()) {
                 for (Parameter param : method.getParams()) {
                     lineIndex++;
                     TsrgParameter tsrgParam = getTsrgParameter(param, method, superMethod);
                     lines.add(lineIndex, new Tsrg.Line<>(tsrgParam));
-                    System.out.print(tsrgParam.toLine());
+                    //System.out.print(tsrgParam.toLine());
                 }
             }
         }
@@ -97,6 +97,9 @@ public class GenerateFunction extends Function {
         ClassType superParent = jar.getClass(child.getSuperParentName());
 
         if (superParent != null) {
+            if (child.getName().equals("tileChanged")) {
+                System.out.println("STOP");
+            }
             return superParent.getMethod(child.getName(), child.getDesc());
         }
 
@@ -130,8 +133,9 @@ public class GenerateFunction extends Function {
     }
 
     public String getMappedMethod(Method method, String mid) {
-        if (method.getInheritanceStatus().equals(Method.InheritanceStatus.CLASSPATH)) {
-            return method.getName(); // all descendants of libraries or the JDK should not be obfuscated.
+        if (method.getInheritanceStatus().equals(Method.InheritanceStatus.CLASSPATH)
+                || method.getName().endsWith("init>")) {
+            return method.getName(); // don't add intermediary names to constructors or JDK/dependency-inherited methods
         }
 
         return method.getName().length() <= config.maxObfChars ? "m_" + mid : method.getName();

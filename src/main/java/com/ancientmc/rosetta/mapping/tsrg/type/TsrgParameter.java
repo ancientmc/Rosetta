@@ -40,6 +40,6 @@ public final class TsrgParameter implements TsrgType {
     // \t\t# o name id\n
     @Override
     public String toLine() {
-        return getIndent() + String.join(" ", Integer.toString(index), getObf(), name) + "\n";
+        return getIndent() + String.join(" ", Integer.toString(index), getObf(), name, id) + "\n";
     }
 }

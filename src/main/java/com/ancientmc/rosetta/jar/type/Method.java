@@ -56,7 +56,7 @@ public final class Method implements Type, ChildType<ClassType> {
     }
 
     public boolean isInherited() {
-        return !inheritanceStatus.equals(InheritanceStatus.NONE);
+        return inheritanceStatus.equals(InheritanceStatus.JAR);
     }
 
     public boolean hasParams() {
