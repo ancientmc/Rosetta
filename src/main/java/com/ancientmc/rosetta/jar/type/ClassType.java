@@ -1,8 +1,5 @@
 package com.ancientmc.rosetta.jar.type;
 
-/**
- * Java class type.
- */
 public final class ClassType implements Type {
     private final String name;
     private final String parentName;

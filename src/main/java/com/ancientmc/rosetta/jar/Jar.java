@@ -43,10 +43,7 @@ public final class Jar {
 
     public Method getSuperMethod(Method child) {
         ClassType superParent = getClass(child.getSuperParentName());
-
-        if (superParent == null) {
-            return null;
-        }
+        if (superParent == null) return null;
 
         return superParent.getMethod(child.getName(), child.getDesc());
     }

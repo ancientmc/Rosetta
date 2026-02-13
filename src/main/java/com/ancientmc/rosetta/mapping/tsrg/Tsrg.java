@@ -33,6 +33,10 @@ public class Tsrg {
         }
     }
 
+    public List<Line<? extends TsrgType>> getLines() {
+        return lines;
+    }
+
     public List<TsrgClass> getClasses() {
         return classes;
     }

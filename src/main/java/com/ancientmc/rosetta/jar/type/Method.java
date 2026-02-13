@@ -1,6 +1,6 @@
 package com.ancientmc.rosetta.jar.type;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public final class Method implements Type, ChildType<ClassType> {
@@ -10,7 +10,7 @@ public final class Method implements Type, ChildType<ClassType> {
     private final String desc;
     private final InheritanceStatus inheritanceStatus;
     private final int argCount;
-    private final List<Parameter> params = new ArrayList<>();
+    private final List<Parameter> params;
 
     public Method(String name, ClassType parent, String superParentName, String desc, InheritanceStatus inheritanceStatus, int argCount) {
         this.name = name;
@@ -19,7 +19,7 @@ public final class Method implements Type, ChildType<ClassType> {
         this.desc = desc;
         this.inheritanceStatus = inheritanceStatus;
         this.argCount = argCount;
-        this.setParams();
+        this.params = buildParams();
     }
 
     @Override
@@ -54,21 +54,25 @@ public final class Method implements Type, ChildType<ClassType> {
         return inheritanceStatus;
     }
 
-    public boolean isInherited() {
-        return inheritanceStatus.equals(InheritanceStatus.JAR);
+    public boolean isInheritedFromJar() {
+        return inheritanceStatus.isJar();
     }
 
     public boolean hasParams() {
         return argCount > 0;
     }
 
-    public void setParams() {
+    private List<Parameter> buildParams() {
+        List<Parameter> params = new LinkedList<>();
+
         if (argCount > 0) {
             for (int i = 0; i < argCount; i++) {
                 Parameter param = new Parameter(i, this);
                 params.add(param);
             }
         }
+
+        return params;
     }
 
     public List<Parameter> getParams() {
@@ -83,6 +87,14 @@ public final class Method implements Type, ChildType<ClassType> {
     public enum InheritanceStatus {
         NONE, // no inheritance
         CLASSPATH, // JDK or Minecraft dependency (LWJGL, Paulscode, etc.)
-        JAR // another Minecraft class
+        JAR; // another Minecraft class
+
+        public boolean isJar() {
+            return this.equals(JAR);
+        }
+
+        public boolean isClasspath() {
+            return this.equals(CLASSPATH);
+        }
     }
 }

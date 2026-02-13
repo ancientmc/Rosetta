@@ -39,8 +39,8 @@ public class GenerateFunction extends Function {
 
         this.classIds = IdSet.createFresh(jar.getClasses());
         this.fieldIds = IdSet.createFresh(jar.getFields());
-        this.methodIds = IdSet.createFresh(jar.getMethods().filtered(m -> !m.isInherited()));
-        this.paramIds = IdSet.createFresh(jar.getParams().filtered(p -> !p.getParent().isInherited()));
+        this.methodIds = IdSet.createFresh(jar.getMethods().filtered(m -> !m.isInheritedFromJar()));
+        this.paramIds = IdSet.createFresh(jar.getParams().filtered(p -> !p.getParent().isInheritedFromJar()));
     }
 
     @Override
@@ -104,13 +104,13 @@ public class GenerateFunction extends Function {
     }
 
     public TsrgMethod getTsrgMethod(Method method, Method superMethod, TsrgClass tsrgCls) {
-        String mid = method.isInherited() ? methodIds.get(superMethod) : methodIds.get(method);
+        String mid = method.isInheritedFromJar() ? methodIds.get(superMethod) : methodIds.get(method);
         String mapped = getMappedMethod(method, mid);
         return new TsrgMethod(method.getName(), method.getDesc(), mapped, tsrgCls, mid);
     }
 
     public TsrgParameter getTsrgParameter(Parameter param, Method method, Method superMethod, TsrgMethod tsrgMtd) {
-        String pid = param.getParent().isInherited()
+        String pid = param.getParent().isInheritedFromJar()
                 ? paramIds.get(superMethod.getParam(param.getIndex()))
                 : paramIds.get(method.getParam(param.getIndex()));
         String name = "p_" + pid;
@@ -118,9 +118,10 @@ public class GenerateFunction extends Function {
     }
 
     public String getMappedMethod(Method method, String mid) {
-        if (method.getInheritanceStatus().equals(Method.InheritanceStatus.CLASSPATH)
-                || method.getName().endsWith("init>")) {
-            return method.getName(); // don't add intermediary names to constructors or JDK/dependency-inherited methods
+        if (method.getInheritanceStatus().isClasspath() // don't add intermediary names to constructors, the main method, or JDK/dependency-inherited methods
+                || method.getName().endsWith("init>")
+                || (method.getName().equals("main") && method.getDesc().equals("([Ljava/lang/String;)V"))) {
+            return method.getName();
         }
 
         return method.getName().length() <= config.maxObfChars ? "m_" + mid : method.getName();

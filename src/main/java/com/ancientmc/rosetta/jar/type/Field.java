@@ -16,7 +16,6 @@ public final class Field implements Type, ChildType<ClassType> {
         return name;
     }
 
-
     @Override
     public ClassType getParent() {
         return parent;
