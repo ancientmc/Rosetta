@@ -131,7 +131,7 @@ public class JarBuilder {
     }
 
     private InheritanceStatus getInheritanceStatus(String superParent) {
-        if (superParent == null || superParent.equals("java/lang/Object")) {
+        if (superParent == null) {
             return InheritanceStatus.NONE;
         } else if (superParent.contains("java/") || superParent.contains("org/lwjgl/") || superParent.contains("com/paulscode/")) {
             return InheritanceStatus.CLASSPATH;
