@@ -1,4 +1,4 @@
-package com.ancientmc.rosetta.jar;
+package com.ancientmc.rosetta.mapping;
 
 import com.ancientmc.rosetta.jar.type.Type;
 import com.ancientmc.rosetta.jar.type.TypeSet;

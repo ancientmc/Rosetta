@@ -37,7 +37,6 @@ public final class TsrgParameter implements TsrgType, TsrgChildType<TsrgMethod> 
         return id;
     }
 
-
     @Override
     public String getIndent() {
         return "\t\t";

@@ -2,7 +2,7 @@ package com.ancientmc.rosetta;
 
 import com.ancientmc.rosetta.function.GenerateFunction;
 import com.ancientmc.rosetta.jar.Jar;
-import com.ancientmc.rosetta.jar.JarBuilder;
+import com.ancientmc.rosetta.jar.JarReader;
 import com.ancientmc.rosetta.util.Util;
 import com.google.gson.JsonObject;
 
@@ -34,7 +34,7 @@ public class GenerateCommand implements Callable<Integer> {
     public Integer call() throws Exception {
         Config config = new Config(configFile);
         JsonObject inheritance = Util.getJson(inheritanceFile);
-        Jar jar = new JarBuilder(jarFile, inheritance, config).build();
+        Jar jar = new JarReader(jarFile, inheritance, config).read();
 
         GenerateFunction function = new GenerateFunction(jar, config, tsrgFile, idCsv);
         function.exec();

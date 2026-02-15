@@ -20,7 +20,7 @@ import java.util.zip.ZipFile;
  * Helper class that parses through a JAR file and builds a JAR object.
  * @author moist-mason
  */
-public class JarBuilder {
+public class JarReader {
     private final File jarFile;
     private final JsonObject inheritance;
     private final Config config;
@@ -30,13 +30,13 @@ public class JarBuilder {
     public final TypeSet<Method> methods = new TypeSet<>();
     public final TypeSet<Parameter> params = new TypeSet<>();
 
-    public JarBuilder(File jarFile, JsonObject inheritance, Config config) {
+    public JarReader(File jarFile, JsonObject inheritance, Config config) {
         this.jarFile = jarFile;
         this.inheritance = inheritance;
         this.config = config;
     }
 
-    public Jar build() throws IOException {
+    public Jar read() throws IOException {
         try (ZipFile zip = new ZipFile(jarFile)) {
             for (ZipEntry entry : Collections.list(zip.entries())) {
                 if (entry.getName().contains(".class") && !config.isExcluded(entry.getName())) {

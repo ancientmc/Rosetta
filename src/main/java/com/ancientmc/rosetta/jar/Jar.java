@@ -14,7 +14,7 @@ public final class Jar {
     private final TypeSet<Method> methods;
     private final TypeSet<Parameter> params;
 
-    public Jar(JarBuilder builder) {
+    public Jar(JarReader builder) {
         this.classes = builder.classes;
         this.fields = builder.fields;
         this.methods = builder.methods;

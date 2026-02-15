@@ -1,12 +1,12 @@
 package com.ancientmc.rosetta.function;
 
 import com.ancientmc.rosetta.Config;
-import com.ancientmc.rosetta.jar.IdSet;
 import com.ancientmc.rosetta.jar.Jar;
 import com.ancientmc.rosetta.jar.type.ClassType;
 import com.ancientmc.rosetta.jar.type.Field;
 import com.ancientmc.rosetta.jar.type.Method;
 import com.ancientmc.rosetta.jar.type.Parameter;
+import com.ancientmc.rosetta.mapping.IdSet;
 import com.ancientmc.rosetta.mapping.tsrg.Tsrg;
 import com.ancientmc.rosetta.mapping.tsrg.type.*;
 
@@ -93,7 +93,7 @@ public class GenerateFunction extends Function {
 
     public TsrgClass getTsrgClass(ClassType cls) {
         String id = classIds.get(cls);
-        String mapped = config.isPremapped(cls.getName()) ? cls.getName() : config.namespace + "c_" + id;
+        String mapped = config.isUnobfuscated(cls.getName()) ? cls.getName() : config.namespace + "c_" + id;
         return new TsrgClass(cls.getName(), mapped, id);
     }
 

@@ -16,14 +16,14 @@ import java.util.List;
 /**
  * Uses SRGUtils to create a TSRG object from a loaded file.
  */
-public class TsrgLoader {
+public class TsrgReader {
     private final File file;
 
-    public TsrgLoader(File file) {
+    public TsrgReader(File file) {
         this.file = file;
     }
 
-    public Tsrg load() throws IOException {
+    public Tsrg read() throws IOException {
         INamedMappingFile names = INamedMappingFile.load(file);
         IMappingFile cnfMap = names.getMap("obf", "cnf");
         IMappingFile idMap = names.getMap("obf", "id");
@@ -38,11 +38,11 @@ public class TsrgLoader {
         return new Tsrg(file, lines, tsrgClasses);
     }
 
-    public void buildClass(IMappingFile.IClass cnfClass, IMappingFile idMap, List<Tsrg.Line<? extends TsrgType>> lines, List<TsrgClass> tsrgClasses) {
+    public void buildClass(IClass cnfClass, IMappingFile idMap, List<Tsrg.Line<? extends TsrgType>> lines, List<TsrgClass> tsrgClasses) {
         List<TsrgField> childFields = new LinkedList<>();
         List<TsrgMethod> childMethods = new LinkedList<>();
 
-        IMappingFile.IClass idClass = idMap.getClass(cnfClass.getOriginal());
+        IClass idClass = idMap.getClass(cnfClass.getOriginal());
         String id = idClass.getMapped();
         TsrgClass cls = new TsrgClass(cnfClass.getOriginal(), cnfClass.getMapped(), id);
         lines.add(new Tsrg.Line<>(cls));

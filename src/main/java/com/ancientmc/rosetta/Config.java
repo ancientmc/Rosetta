@@ -18,7 +18,7 @@ public class Config {
     public final List<String> excluded;
 
     /** List of classes that are excluded from being given intermediate class names. */
-    public final List<String> premapped;
+    public final List<String> unobfuscated;
 
     /** The package namespace that intermediate classes are put into. */
     public final String namespace;
@@ -29,7 +29,7 @@ public class Config {
     public Config(File configFile) {
         JsonObject config = Util.getJson(configFile);
         excluded = getArray(config, "excluded");
-        premapped = getArray(config, "premapped");
+        unobfuscated = getArray(config, "unobfuscated");
         namespace = config.get("namespace").getAsString();
         maxObfChars = config.get("max_obf_chars").getAsInt();
     }
@@ -56,7 +56,7 @@ public class Config {
     /**
      * @return {@code true} if the input data is a premapped element.
      */
-    public boolean isPremapped(String data) {
-        return premapped.contains(data);
+    public boolean isUnobfuscated(String data) {
+        return unobfuscated.contains(data);
     }
 }
