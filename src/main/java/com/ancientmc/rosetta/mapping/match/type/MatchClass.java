@@ -1,8 +1,10 @@
 package com.ancientmc.rosetta.mapping.match.type;
 
+import com.ancientmc.rosetta.jar.type.ClassType;
+
 import java.util.List;
 
-public class MatchClass implements MatchType {
+public final class MatchClass implements MatchType<ClassType> {
     private final String oldName;
     private final String newName;
 
@@ -15,8 +17,8 @@ public class MatchClass implements MatchType {
     }
 
     public void setChildren(List<MatchField> fields, List<MatchMethod> methods) {
-        this.fields = fields;
-        this.methods = methods;
+        this.fields = fields.stream().filter(f -> f.getOldParentName().equals(oldName)).toList();
+        this.methods = methods.stream().filter(m -> m.getOldParentName().equals(oldName)).toList();
     }
 
     public static MatchClass dummy() {
@@ -34,8 +36,8 @@ public class MatchClass implements MatchType {
     }
 
     @Override
-    public String toString() {
-        return "CLASS: oldName=" + oldName + " newName=" + newName;
+    public boolean matches(ClassType type) {
+        return type.getName().equals(newName);
     }
 
     public List<MatchField> getFields() {

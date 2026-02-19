@@ -1,4 +1,4 @@
-package com.ancientmc.rosetta.util;
+package com.ancientmc.rosetta;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

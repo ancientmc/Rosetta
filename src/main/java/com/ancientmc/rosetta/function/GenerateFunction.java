@@ -44,13 +44,13 @@ public class GenerateFunction extends Function {
     }
 
     @Override
-    public void callIdWriter() throws IOException {
-        super.writeIds(idCsv, classIds, fieldIds, methodIds, paramIds);
+    protected void callIdWriter() throws IOException {
+        super.writeIds(idCsv, classIds.counter, fieldIds.counter, methodIds.counter, paramIds.counter);
     }
 
     @Override
-    public Tsrg buildTsrg() {
-        List<Tsrg.Line<? extends TsrgType>> lines = new LinkedList<>();
+    protected Tsrg buildTsrg() {
+        List<TsrgType> lines = new LinkedList<>();
         List<TsrgClass> tsrgClasses = new LinkedList<>();
 
         for (ClassType cls : jar.getClasses()) {
@@ -60,30 +60,35 @@ public class GenerateFunction extends Function {
         return new Tsrg(tsrgFile, lines, tsrgClasses);
     }
 
-    public void buildClass(List<Tsrg.Line<? extends TsrgType>> lines, ClassType cls, List<TsrgClass> tsrgClasses) {
+    private void buildClass(List<TsrgType> lines, ClassType cls, List<TsrgClass> tsrgClasses) {
         List<TsrgField> childTsrgFields = new LinkedList<>();
         List<TsrgMethod> childTsrgMethods = new LinkedList<>();
 
         TsrgClass tsrgCls = getTsrgClass(cls);
-        lines.add(new Tsrg.Line<>(tsrgCls));
+        lines.add(tsrgCls);
 
         for (Field field : cls.getFields()) {
             TsrgField tsrgFld = getTsrgField(field, tsrgCls);
             childTsrgFields.add(tsrgFld);
-            lines.add(new Tsrg.Line<>(tsrgFld));
+            lines.add(tsrgFld);
         }
 
         for (Method method : cls.getMethods()) {
             Method superMethod = jar.getSuperMethod(method);
             TsrgMethod tsrgMtd = getTsrgMethod(method, superMethod, tsrgCls);
             childTsrgMethods.add(tsrgMtd);
-            lines.add(new Tsrg.Line<>(tsrgMtd));
+            lines.add(tsrgMtd);
 
             if (method.hasParams()) {
+                List<TsrgParameter> tsrgParams = new LinkedList<>();
+
                 for (Parameter param : method.getParams()) {
                     TsrgParameter tsrgParam = getTsrgParameter(param, method, superMethod, tsrgMtd);
-                    lines.add(new Tsrg.Line<>(tsrgParam));
+                    lines.add(tsrgParam);
+                    tsrgParams.add(tsrgParam);
                 }
+
+                tsrgMtd.setParams(tsrgParams);
             }
         }
 
@@ -91,25 +96,25 @@ public class GenerateFunction extends Function {
         tsrgClasses.add(tsrgCls);
     }
 
-    public TsrgClass getTsrgClass(ClassType cls) {
+    private TsrgClass getTsrgClass(ClassType cls) {
         String id = classIds.get(cls);
         String mapped = config.isUnobfuscated(cls.getName()) ? cls.getName() : config.namespace + "c_" + id;
         return new TsrgClass(cls.getName(), mapped, id);
     }
 
-    public TsrgField getTsrgField(Field field, TsrgClass tsrgCls) {
+    private TsrgField getTsrgField(Field field, TsrgClass tsrgCls) {
         String id = fieldIds.get(field);
         String mapped = field.getName().length() <= config.maxObfChars ? "f_" + id : field.getName();
         return new TsrgField(field.getName(), mapped, tsrgCls, id);
     }
 
-    public TsrgMethod getTsrgMethod(Method method, Method superMethod, TsrgClass tsrgCls) {
+    private TsrgMethod getTsrgMethod(Method method, Method superMethod, TsrgClass tsrgCls) {
         String mid = method.isInheritedFromJar() ? methodIds.get(superMethod) : methodIds.get(method);
         String mapped = getMappedMethod(method, mid);
         return new TsrgMethod(method.getName(), method.getDesc(), mapped, tsrgCls, mid);
     }
 
-    public TsrgParameter getTsrgParameter(Parameter param, Method method, Method superMethod, TsrgMethod tsrgMtd) {
+    private TsrgParameter getTsrgParameter(Parameter param, Method method, Method superMethod, TsrgMethod tsrgMtd) {
         String pid = param.getParent().isInheritedFromJar()
                 ? paramIds.get(superMethod.getParam(param.getIndex()))
                 : paramIds.get(method.getParam(param.getIndex()));
@@ -117,7 +122,7 @@ public class GenerateFunction extends Function {
         return new TsrgParameter(param.getIndex(), name, tsrgMtd, pid);
     }
 
-    public String getMappedMethod(Method method, String mid) {
+    private String getMappedMethod(Method method, String mid) {
         if (method.getInheritanceStatus().isClasspath() // don't add intermediary names to constructors, the main method, or JDK/dependency-inherited methods
                 || method.getName().endsWith("init>")
                 || (method.getName().equals("main") && method.getDesc().equals("([Ljava/lang/String;)V"))) {

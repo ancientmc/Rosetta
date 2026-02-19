@@ -1,9 +1,10 @@
-package com.ancientmc.rosetta;
+package com.ancientmc.rosetta.command;
 
+import com.ancientmc.rosetta.Config;
 import com.ancientmc.rosetta.function.GenerateFunction;
 import com.ancientmc.rosetta.jar.Jar;
 import com.ancientmc.rosetta.jar.JarReader;
-import com.ancientmc.rosetta.util.Util;
+import com.ancientmc.rosetta.Util;
 import com.google.gson.JsonObject;
 
 import java.io.File;

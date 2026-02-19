@@ -1,9 +1,7 @@
 package com.ancientmc.rosetta.mapping.match;
 
-import com.ancientmc.rosetta.mapping.match.type.MatchClass;
-import com.ancientmc.rosetta.mapping.match.type.MatchField;
-import com.ancientmc.rosetta.mapping.match.type.MatchMethod;
-import com.ancientmc.rosetta.mapping.match.type.MatchParameter;
+import com.ancientmc.rosetta.jar.type.Type;
+import com.ancientmc.rosetta.mapping.match.type.*;
 
 import java.util.List;
 
@@ -36,7 +34,18 @@ public class Match {
         return params;
     }
 
-    public void successTest() {
-        System.out.println("made successfully");
+
+    /**
+     * @return the Match type based on the given list and java type.
+     */
+    public <J extends Type, M extends MatchType<J>> M getType(List<M> matchTypes, J type) {
+        return matchTypes.stream().filter(t -> t.matches(type)).findAny().orElseThrow();
+    }
+
+    /**
+     * @return {@code true} if the Java type is found within the given list of match types.
+     */
+    public <J extends Type, M extends MatchType<J>> boolean isMatched(List<M> matchTypes, J type) {
+        return matchTypes.stream().anyMatch(m -> m.matches(type));
     }
 }

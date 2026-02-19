@@ -30,13 +30,31 @@ public class IdSet<T extends Type> {
     public static <T extends Type> IdSet<T> createFresh(TypeSet<T> set) {
         Map<T, String> map = new LinkedHashMap<>();
 
-        for (int i = 0; i < set.size(); i++) {
-            T type = set.get(i);
+        for (T type : set) {
+            int i = set.indexOf(type);
             String id = getFormattedId(i + 1);
             map.put(type, id);
         }
 
         return new IdSet<>(map, map.size());
+    }
+
+    /**
+     * Used for TSRG updating.
+     * @param set A type set.
+     * @param counter The original counter.
+     * @return A set of IDs to be added to the updated TSRG.
+     * @param <T> The given data type.
+     */
+    public static <T extends Type> IdSet<T> createNew(TypeSet<T> set, int counter) {
+        Map<T, String> map = new LinkedHashMap<>();
+
+        for (T type : set) {
+            counter++;
+            map.put(type, getFormattedId(counter));
+        }
+
+        return new IdSet<>(map, counter);
     }
 
     public String get(T type) {
@@ -46,5 +64,4 @@ public class IdSet<T extends Type> {
     public static String getFormattedId(int id) {
         return new DecimalFormat("00000").format(id);
     }
-
 }

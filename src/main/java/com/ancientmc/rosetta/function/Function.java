@@ -19,18 +19,18 @@ public abstract class Function {
         callIdWriter();
     }
 
-    public abstract Tsrg buildTsrg();
+    protected abstract Tsrg buildTsrg();
 
-    public abstract void callIdWriter() throws IOException;
+    protected abstract void callIdWriter() throws IOException;
 
-    public void writeIds(File csv, IdSet<ClassType> classIds, IdSet<Field> fieldIds,
-                         IdSet<Method> methodIds, IdSet<Parameter> paramIds) throws IOException {
+    public void writeIds(File csv, int classes, int fields, int methods, int params) throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(csv.toPath())) {
             writer.write("type,counter\n");
-            writer.write("classes," + classIds.counter + "\n");
-            writer.write("fields," + fieldIds.counter + "\n");
-            writer.write("methods," + methodIds.counter + "\n");
-            writer.write("params," + paramIds.counter + "\n");
+            writer.write("classes," + classes + "\n");
+            writer.write("fields," + fields + "\n");
+            writer.write("methods," + methods + "\n");
+            writer.write("params," + params);
+            writer.flush();
         }
     }
 }

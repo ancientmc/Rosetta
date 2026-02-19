@@ -38,7 +38,15 @@ public class Paths {
     };
 
     public static final String[] UPDATE_ARGS = new String[] {
-            "update", CONFIG, NEW_JAR, NEW_INHERITANCE, OLD_TSRG, OLD_IDS, MATCH, NEW_TSRG, NEW_IDS
+            "--update",
+            "--config", CONFIG,
+            "--jar", NEW_JAR,
+            "--inheritance", NEW_INHERITANCE,
+            "--match", MATCH,
+            "--old-tsrg", OLD_TSRG,
+            "--old-ids", OLD_IDS,
+            "--new-tsrg", NEW_TSRG,
+            "--new-ids", NEW_IDS
     };
 
     // Hardcoded paths to avoid null exception funny business because some of the paths are outputs.

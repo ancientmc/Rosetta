@@ -1,6 +1,8 @@
 package com.ancientmc.rosetta.mapping.match.type;
 
-public class MatchField implements MatchType, MatchChildType<MatchClass> {
+import com.ancientmc.rosetta.jar.type.Field;
+
+public final class MatchField implements MatchType<Field>, MatchChildType<MatchClass> {
     private final String oldName;
     private final String newName;
     private final MatchClass parent;
@@ -38,7 +40,8 @@ public class MatchField implements MatchType, MatchChildType<MatchClass> {
     }
 
     @Override
-    public String toString() {
-        return "FIELD: oldName=" + oldName + " newName=" + newName;
+    public boolean matches(Field type) {
+        return type.getName().equals(newName)
+                && type.getParentName().equals(getNewParentName());
     }
 }

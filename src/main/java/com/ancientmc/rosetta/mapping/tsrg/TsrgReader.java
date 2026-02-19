@@ -28,7 +28,7 @@ public class TsrgReader {
         IMappingFile cnfMap = names.getMap("obf", "cnf");
         IMappingFile idMap = names.getMap("obf", "id");
 
-        List<Tsrg.Line<? extends TsrgType>> lines = new LinkedList<>();
+        List<TsrgType> lines = new LinkedList<>();
         List<TsrgClass> tsrgClasses = new LinkedList<>();
 
         for (IClass cnfClass : cnfMap.getClasses()) {
@@ -38,29 +38,36 @@ public class TsrgReader {
         return new Tsrg(file, lines, tsrgClasses);
     }
 
-    public void buildClass(IClass cnfClass, IMappingFile idMap, List<Tsrg.Line<? extends TsrgType>> lines, List<TsrgClass> tsrgClasses) {
+    public void buildClass(IClass cnfClass, IMappingFile idMap, List<TsrgType> lines, List<TsrgClass> tsrgClasses) {
         List<TsrgField> childFields = new LinkedList<>();
         List<TsrgMethod> childMethods = new LinkedList<>();
 
         IClass idClass = idMap.getClass(cnfClass.getOriginal());
         String id = idClass.getMapped();
         TsrgClass cls = new TsrgClass(cnfClass.getOriginal(), cnfClass.getMapped(), id);
-        lines.add(new Tsrg.Line<>(cls));
+        lines.add(cls);
 
         for (IField cnfField : cnfClass.getFields()) {
             TsrgField field = getField(idClass, cnfField, cls);
-            lines.add(new Tsrg.Line<>(field));
+            lines.add(field);
             childFields.add(field);
         }
 
         for (IMethod cnfMethod : cnfClass.getMethods()) {
             TsrgMethod method = getMethod(idClass, cnfMethod, cls);
-            lines.add(new Tsrg.Line<>(method));
+            lines.add(method);
             childMethods.add(method);
 
-            for (IParameter cnfParam : cnfMethod.getParameters()) {
-                TsrgParameter param = getParam(idClass, cnfParam, cnfMethod, method);
-                lines.add(new Tsrg.Line<>(param));
+            if (!cnfMethod.getParameters().isEmpty()) {
+                List<TsrgParameter> params = new LinkedList<>();
+
+                for (IParameter cnfParam : cnfMethod.getParameters()) {
+                    TsrgParameter param = getParam(idClass, cnfParam, cnfMethod, method);
+                    lines.add(param);
+                    params.add(param);
+                }
+
+                method.setParams(params);
             }
         }
 
@@ -92,6 +99,6 @@ public class TsrgReader {
         if (idParam == null) return null;
 
         String id = idParam.getMapped();
-        return new TsrgParameter(idParam.getIndex(), idParam.getMapped(), parent, id);
+        return new TsrgParameter(idParam.getIndex(), cnfParam.getMapped(), parent, id);
     }
 }

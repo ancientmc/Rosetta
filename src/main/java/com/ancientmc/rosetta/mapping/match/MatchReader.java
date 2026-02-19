@@ -34,25 +34,23 @@ public class MatchReader {
         MatchMethod currentMethod = MatchMethod.dummy();
 
         for (String line : lines) {
-            List<MatchField> childFields = new LinkedList<>();
-            List<MatchMethod> childMethods = new LinkedList<>();
-
+            System.out.println(line);
             if (line.startsWith("c\tL")) {
-                clear(currentClass, childFields, childMethods);
+                currentMethod.setParams(params);
+                currentClass.setChildren(fields, methods);
                 currentClass = getClass(line);
                 classes.add(currentClass);
             } else if (line.startsWith("\tf\t")) {
+                currentMethod.setParams(params);
                 MatchField field = getField(line, currentClass);
                 fields.add(field);
-                childFields.add(field);
             } else if (line.startsWith("\tm\t")) {
+                currentMethod.setParams(params);
                 currentMethod = getMethod(line, currentClass);
                 methods.add(currentMethod);
             } else if (line.startsWith("\t\tma\t")) {
                 MatchParameter param = getParam(line, currentMethod);
                 params.add(param);
-            } else if (lines.indexOf(line) == (lines.size() - 1)) {
-                clear(currentClass, childFields, childMethods); // ensure the last class's members are added.
             }
         }
 
@@ -62,9 +60,11 @@ public class MatchReader {
 
     /** Adds local fields and methods to the current class, then clears the lists for fields and methods. */
     public void clear(MatchClass cls, List<MatchField> childFields, List<MatchMethod> childMethods) {
-        cls.setChildren(childFields, childMethods);
-        childFields.clear();
-        childMethods.clear();
+
+    }
+
+    public void clearParams(MatchMethod method, List<MatchParameter> childParams) {
+        method.setParams(childParams);
     }
 
     public MatchClass getClass(String line) {

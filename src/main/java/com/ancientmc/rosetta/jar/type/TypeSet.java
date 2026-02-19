@@ -61,6 +61,10 @@ public class TypeSet<T extends Type> implements Iterable<T> {
         return list().get(i);
     }
 
+    public int indexOf(T type) {
+        return list().indexOf(type);
+    }
+
     public int size() {
         return list().size();
     }

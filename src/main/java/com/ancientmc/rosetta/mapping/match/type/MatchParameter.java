@@ -1,6 +1,8 @@
 package com.ancientmc.rosetta.mapping.match.type;
 
-public class MatchParameter implements MatchType, MatchChildType<MatchMethod> {
+import com.ancientmc.rosetta.jar.type.Parameter;
+
+public final class MatchParameter implements MatchType<Parameter>, MatchChildType<MatchMethod> {
     private final int oldIndex;
     private final int newIndex;
     private final MatchMethod parent;
@@ -30,6 +32,11 @@ public class MatchParameter implements MatchType, MatchChildType<MatchMethod> {
     }
 
     @Override
+    public boolean matches(Parameter type) {
+        return true; // unused
+    }
+
+    @Override
     public MatchMethod getParent() {
         return parent;
     }
@@ -42,10 +49,5 @@ public class MatchParameter implements MatchType, MatchChildType<MatchMethod> {
     @Override
     public String getNewParentName() {
         return parent.getNewName();
-    }
-
-    @Override
-    public String toString() {
-        return "PARAM: oldIndex=" + getOldName() + " newIndex=" + getNewName();
     }
 }
