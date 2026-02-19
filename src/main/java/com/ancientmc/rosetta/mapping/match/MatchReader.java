@@ -17,10 +17,10 @@ import java.util.List;
 public class MatchReader {
     private final File file;
 
-    public List<MatchClass> classes = new LinkedList<>();
-    public List<MatchField> fields = new LinkedList<>();
-    public List<MatchMethod> methods = new LinkedList<>();
-    public List<MatchParameter> params = new LinkedList<>();
+    public final List<MatchClass> classes = new LinkedList<>();
+    public final List<MatchField> fields = new LinkedList<>();
+    public final List<MatchMethod> methods = new LinkedList<>();
+    public final List<MatchParameter> params = new LinkedList<>();
 
     public MatchReader(File file) {
         this.file = file;
@@ -55,16 +55,6 @@ public class MatchReader {
         }
 
         return new Match(this);
-    }
-
-
-    /** Adds local fields and methods to the current class, then clears the lists for fields and methods. */
-    public void clear(MatchClass cls, List<MatchField> childFields, List<MatchMethod> childMethods) {
-
-    }
-
-    public void clearParams(MatchMethod method, List<MatchParameter> childParams) {
-        method.setParams(childParams);
     }
 
     public MatchClass getClass(String line) {

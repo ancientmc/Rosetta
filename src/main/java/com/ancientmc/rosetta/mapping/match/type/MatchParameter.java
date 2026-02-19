@@ -1,8 +1,9 @@
 package com.ancientmc.rosetta.mapping.match.type;
 
+import com.ancientmc.rosetta.jar.type.Method;
 import com.ancientmc.rosetta.jar.type.Parameter;
 
-public final class MatchParameter implements MatchType<Parameter>, MatchChildType<MatchMethod> {
+public final class MatchParameter implements MatchType<Parameter>, MatchChildType<Method, MatchMethod> {
     private final int oldIndex;
     private final int newIndex;
     private final MatchMethod parent;

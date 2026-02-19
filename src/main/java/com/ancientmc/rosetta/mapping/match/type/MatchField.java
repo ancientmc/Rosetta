@@ -1,8 +1,9 @@
 package com.ancientmc.rosetta.mapping.match.type;
 
+import com.ancientmc.rosetta.jar.type.ClassType;
 import com.ancientmc.rosetta.jar.type.Field;
 
-public final class MatchField implements MatchType<Field>, MatchChildType<MatchClass> {
+public final class MatchField implements MatchType<Field>, MatchChildType<ClassType, MatchClass> {
     private final String oldName;
     private final String newName;
     private final MatchClass parent;

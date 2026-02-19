@@ -8,7 +8,4 @@ public sealed interface TsrgType permits TsrgClass, TsrgField, TsrgMethod, TsrgP
     String getId();
 
     String getIndent();
-
-    @Override
-    String toString();
 }

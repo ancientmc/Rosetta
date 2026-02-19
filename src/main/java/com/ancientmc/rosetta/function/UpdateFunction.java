@@ -70,13 +70,11 @@ public class UpdateFunction extends Function {
 
         TsrgClass tsrgClass = getTsrgCls(cls);
         lines.add(tsrgClass);
-        System.out.println(tsrgClass);
 
         for (Field field : cls.getFields()) {
             TsrgField tsrgField = getTsrgField(field, tsrgClass);
             childTsrgFields.add(tsrgField);
             lines.add(tsrgField);
-            System.out.println(tsrgField);
         }
 
         for (Method method : cls.getMethods()) {
@@ -85,13 +83,11 @@ public class UpdateFunction extends Function {
                 TsrgMethod tsrgMethod = getTsrgMethod(superMethod, tsrgClass);
                 childTsrgMethods.add(tsrgMethod);
                 lines.add(tsrgMethod);
-                System.out.println(tsrgMethod);
                 if (superMethod != null) addParams(superMethod, lines, tsrgMethod);
             } else {
                 TsrgMethod tsrgMethod = getTsrgMethod(method, tsrgClass);
                 childTsrgMethods.add(tsrgMethod);
                 lines.add(tsrgMethod);
-                System.out.println(tsrgMethod);
                 addParams(method, lines, tsrgMethod);
             }
         }
@@ -159,11 +155,9 @@ public class UpdateFunction extends Function {
                         TsrgParameter oldTsrgParam = tsrgMethod.getParameter(param.getIndex());
                         TsrgParameter newTsrgParam = new TsrgParameter(param.getIndex(), oldTsrgParam.getMapped(), parent, oldTsrgParam.getId());
                         lines.add(newTsrgParam);
-                        System.out.print(newTsrgParam);
                     } else { // new param in matched method
                         String id = paramIds.get(param);
                         TsrgParameter newTsrgParam = new TsrgParameter(param.getIndex(), "p_" + id, parent, id);
-                        System.out.print(newTsrgParam);
                         lines.add(newTsrgParam);
                     }
                 }
@@ -172,7 +166,6 @@ public class UpdateFunction extends Function {
                     String id = paramIds.get(param);
                     TsrgParameter newTsrgParam = new TsrgParameter(param.getIndex(), "p_" + id, parent, id);
                     lines.add(newTsrgParam);
-                    System.out.print(newTsrgParam);
                 }
             }
         }

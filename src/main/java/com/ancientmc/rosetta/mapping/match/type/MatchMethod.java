@@ -1,10 +1,11 @@
 package com.ancientmc.rosetta.mapping.match.type;
 
+import com.ancientmc.rosetta.jar.type.ClassType;
 import com.ancientmc.rosetta.jar.type.Method;
 
 import java.util.List;
 
-public final class MatchMethod implements MatchType<Method>, MatchChildType<MatchClass> {
+public final class MatchMethod implements MatchType<Method>, MatchChildType<ClassType, MatchClass> {
     private final String oldName;
     private final String newName;
     private final String oldDesc;

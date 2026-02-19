@@ -1,6 +1,5 @@
 package com.ancientmc.rosetta.mapping.tsrg;
 
-import com.ancientmc.rosetta.jar.type.ClassType;
 import com.ancientmc.rosetta.mapping.tsrg.type.*;
 
 import java.io.BufferedWriter;
@@ -20,10 +19,6 @@ public class Tsrg {
         this.file = file;
         this.lines = lines;
         this.classes = classes;
-    }
-
-    public List<TsrgType> getLines() {
-        return lines;
     }
 
     public List<TsrgClass> getClasses() {
