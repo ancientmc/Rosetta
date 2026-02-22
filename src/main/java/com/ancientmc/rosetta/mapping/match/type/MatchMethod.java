@@ -36,7 +36,6 @@ public final class MatchMethod implements MatchType<Method>, MatchChildType<Clas
         return oldName;
     }
 
-
     @Override
     public String getNewName() {
         return newName;
@@ -55,12 +54,10 @@ public final class MatchMethod implements MatchType<Method>, MatchChildType<Clas
         return parent;
     }
 
-
     @Override
     public String getOldParentName() {
         return parent.getOldName();
     }
-
 
     @Override
     public String getNewParentName() {

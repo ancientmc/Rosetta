@@ -10,8 +10,6 @@ public sealed interface Type permits ClassType, Field, Method, Parameter {
 
     String getParentName();
 
-    /**
-     * @return Unique identifier used for retrieving this type.
-     */
+    /** @return Unique identifier used for retrieving this type */
     String getTypeSetId();
 }

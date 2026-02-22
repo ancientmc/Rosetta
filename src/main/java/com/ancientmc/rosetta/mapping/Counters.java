@@ -10,7 +10,7 @@ import java.util.Map;
 public class Counters {
     private final Map<String, Integer> entries;
 
-    public Counters(Map<String, Integer> entries) {
+    private Counters(Map<String, Integer> entries) {
         this.entries = entries;
     }
 

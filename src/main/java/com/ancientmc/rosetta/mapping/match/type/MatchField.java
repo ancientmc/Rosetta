@@ -19,7 +19,6 @@ public final class MatchField implements MatchType<Field>, MatchChildType<ClassT
         return oldName;
     }
 
-
     @Override
     public String getNewName() {
         return newName;

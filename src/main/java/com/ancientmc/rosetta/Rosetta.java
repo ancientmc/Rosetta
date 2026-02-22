@@ -2,7 +2,6 @@ package com.ancientmc.rosetta;
 
 import com.ancientmc.rosetta.command.GenerateCommand;
 import com.ancientmc.rosetta.command.UpdateCommand;
-import com.ancientmc.rosetta.function.UpdateFunction;
 import picocli.CommandLine;
 
 import static picocli.CommandLine.Command;

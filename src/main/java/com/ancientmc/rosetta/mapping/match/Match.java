@@ -5,7 +5,7 @@ import com.ancientmc.rosetta.mapping.match.type.*;
 
 import java.util.List;
 
-public class Match {
+public final class Match {
     private final List<MatchClass> classes;
     private final List<MatchField> fields;
     private final List<MatchMethod> methods;
@@ -33,7 +33,6 @@ public class Match {
     public List<MatchParameter> getParams() {
         return params;
     }
-
 
     /**
      * @return the Match type based on the given list and java type.

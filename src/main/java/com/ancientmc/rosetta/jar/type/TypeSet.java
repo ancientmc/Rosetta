@@ -19,12 +19,8 @@ public class TypeSet<T extends Type> implements Iterable<T> {
         map.put(type.getTypeSetId(), type);
     }
 
-    public void addAll(LinkedList<T> list) {
+    private void addAll(LinkedList<T> list) {
         list.forEach(this::add);
-    }
-
-    public void addAll(TypeSet<T> set) {
-        set.forEach(this::add);
     }
 
     private LinkedList<T> list() {
@@ -48,17 +44,13 @@ public class TypeSet<T extends Type> implements Iterable<T> {
      */
     public TypeSet<T> filtered(Predicate<T> predicate) {
         LinkedList<T> filteredList = new LinkedList<>(list().stream().filter(predicate).toList());
-        TypeSet<T> newSet = new TypeSet<>();
-        newSet.addAll(filteredList);
-        return newSet;
+        TypeSet<T> filteredSet = new TypeSet<>();
+        filteredSet.addAll(filteredList);
+        return filteredSet;
     }
 
     public T get(String id) {
         return map.get(id);
-    }
-
-    public T get(int i) {
-        return list().get(i);
     }
 
     public int indexOf(T type) {
@@ -67,9 +59,5 @@ public class TypeSet<T extends Type> implements Iterable<T> {
 
     public int size() {
         return list().size();
-    }
-
-    public boolean isEmpty() {
-        return list().isEmpty();
     }
 }

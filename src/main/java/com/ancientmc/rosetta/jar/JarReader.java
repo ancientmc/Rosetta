@@ -82,7 +82,7 @@ public class JarReader {
      * @return the field.
      */
     private Field getField(ClassType parent, FieldNode node) {
-        Field field = new Field(node.name, parent, node.desc);
+        Field field = new Field(node.name, parent);
         fields.add(field);
         return field;
     }
@@ -110,7 +110,7 @@ public class JarReader {
         return method;
     }
 
-    public String getSuperParent(String className, String methodName, String methodDesc) {
+    private String getSuperParent(String className, String methodName, String methodDesc) {
         JsonObject methods = inheritance.getAsJsonObject(className).getAsJsonObject("methods");
 
         if (methods != null) {

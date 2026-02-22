@@ -142,7 +142,7 @@ public class UpdateFunction extends Function {
         return method.getName().length() <= config.maxObfChars ? "m_" + mid : method.getName();
     }
 
-    public void addParams(Method method, List<TsrgType> lines, TsrgMethod parent) {
+    private void addParams(Method method, List<TsrgType> lines, TsrgMethod parent) {
         if (method.hasParams()) {
             if (match.isMatched(match.getMethods(), method)) { // matched method
                 for (Parameter param : method.getParams()) {

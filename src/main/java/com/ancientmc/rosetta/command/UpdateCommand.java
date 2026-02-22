@@ -20,6 +20,7 @@ import static picocli.CommandLine.Option;
 
 @Command(name = "--update")
 public class UpdateCommand implements Callable<Integer> {
+
     @Option(names = "--config")
     File configFile;
 

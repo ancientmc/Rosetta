@@ -3,12 +3,10 @@ package com.ancientmc.rosetta.jar.type;
 public final class Field implements Type, ChildType<ClassType> {
     private final String name;
     private final ClassType parent;
-    private final String desc;
 
-    public Field(String name, ClassType parent, String desc) {
+    public Field(String name, ClassType parent) {
         this.name = name;
         this.parent = parent;
-        this.desc = desc;
     }
 
     @Override
@@ -24,10 +22,6 @@ public final class Field implements Type, ChildType<ClassType> {
     @Override
     public String getParentName() {
         return parent.getName();
-    }
-
-    public String getDesc() {
-        return desc;
     }
 
     @Override

@@ -109,17 +109,17 @@ public class GenerateFunction extends Function {
     }
 
     private TsrgMethod getTsrgMethod(Method method, Method superMethod, TsrgClass tsrgCls) {
-        String mid = method.isInheritedFromJar() ? methodIds.get(superMethod) : methodIds.get(method);
-        String mapped = getMappedMethod(method, mid);
-        return new TsrgMethod(method.getName(), method.getDesc(), mapped, tsrgCls, mid);
+        String id = method.isInheritedFromJar() ? methodIds.get(superMethod) : methodIds.get(method);
+        String mapped = getMappedMethod(method, id);
+        return new TsrgMethod(method.getName(), method.getDesc(), mapped, tsrgCls, id);
     }
 
     private TsrgParameter getTsrgParameter(Parameter param, Method method, Method superMethod, TsrgMethod tsrgMtd) {
-        String pid = param.getParent().isInheritedFromJar()
+        String id = param.getParent().isInheritedFromJar()
                 ? paramIds.get(superMethod.getParam(param.getIndex()))
                 : paramIds.get(method.getParam(param.getIndex()));
-        String name = "p_" + pid;
-        return new TsrgParameter(param.getIndex(), name, tsrgMtd, pid);
+        String name = "p_" + id;
+        return new TsrgParameter(param.getIndex(), name, tsrgMtd, id);
     }
 
     private String getMappedMethod(Method method, String mid) {
