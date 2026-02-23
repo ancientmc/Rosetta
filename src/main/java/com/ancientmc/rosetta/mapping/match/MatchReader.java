@@ -52,6 +52,11 @@ public class MatchReader {
                 MatchParameter param = getParam(line, currentMethod);
                 params.add(param);
             }
+
+            if (line.equals(lines.getLast())) {
+                currentMethod.setParams(params);
+                currentClass.setChildren(fields, methods);
+            }
         }
 
         return new Match(this);

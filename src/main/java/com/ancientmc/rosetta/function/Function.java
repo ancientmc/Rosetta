@@ -1,10 +1,5 @@
 package com.ancientmc.rosetta.function;
 
-import com.ancientmc.rosetta.jar.type.ClassType;
-import com.ancientmc.rosetta.jar.type.Field;
-import com.ancientmc.rosetta.jar.type.Method;
-import com.ancientmc.rosetta.jar.type.Parameter;
-import com.ancientmc.rosetta.mapping.IdSet;
 import com.ancientmc.rosetta.mapping.tsrg.Tsrg;
 
 import java.io.BufferedWriter;

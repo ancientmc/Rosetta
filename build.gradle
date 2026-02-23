@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.ancientmc'
-version = '1.0.0'
+version = '1.0-SNAPSHOT-1'
 
 repositories {
     mavenCentral()
@@ -16,8 +16,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.13.0'
     implementation 'info.picocli:picocli:4.7.6'
     implementation 'net.neoforged:srgutils:1.0.11'
-    implementation 'org.ow2.asm:asm:9.7.1'
-    implementation 'org.ow2.asm:asm-tree:9.7.1'
+    implementation 'org.ow2.asm:asm:9.9.1'
+    implementation 'org.ow2.asm:asm-tree:9.9.1'
 
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'net.minecraftforge:mapping-verifier:2.0.8:fatjar'
