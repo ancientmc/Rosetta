@@ -111,8 +111,8 @@ public class UpdateFunction extends Function {
     private TsrgField getTsrgField(Field field, TsrgClass tsrgClass) {
         if (match.isMatched(match.getFields(), field)) {
             MatchField matchField = match.getType(match.getFields(), field);
-            TsrgField oldTsrgField = oldTsrg.getField(matchField.getOldName(), matchField.getOldParentName());
-            return new TsrgField(field.getName(), oldTsrgField.getMapped(), tsrgClass, oldTsrgField.getId());
+            TsrgField tsrgField = oldTsrg.getField(matchField.getOldName(), matchField.getOldParentName());
+            return new TsrgField(field.getName(), tsrgField.getMapped(), tsrgClass, tsrgField.getId());
         } else {
             String id = fieldIds.get(field);
             String mapped = field.getName().length() <= config.maxObfChars ? "f_" + id : field.getName();
@@ -124,7 +124,7 @@ public class UpdateFunction extends Function {
         if (match.isMatched(match.getMethods(), method)) {
             MatchMethod matchMethod = match.getType(match.getMethods(), method);
             TsrgMethod tsrgMethod = oldTsrg.getMethod(matchMethod.getOldName(), matchMethod.getOldDesc(), matchMethod.getOldParentName());
-            return new TsrgMethod(tsrgMethod.getObf(), tsrgMethod.getDesc(), tsrgMethod.getMapped(), tsrgClass, tsrgMethod.getId());
+            return new TsrgMethod(method.getName(), method.getDesc(), tsrgMethod.getMapped(), tsrgClass, tsrgMethod.getId());
         } else {
             String mid = methodIds.get(method);
             String mapped = getMappedMethod(method, mid);

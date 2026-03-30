@@ -85,9 +85,19 @@ public final class Method implements Type, ChildType<ClassType> {
 
     /** Represents the method's inheritance source, or if it's even inherited at all. */
     public enum InheritanceStatus {
-        NONE, // no inheritance
-        CLASSPATH, // JDK or Minecraft dependency (LWJGL, Paulscode, etc.)
-        JAR; // another Minecraft class
+        NONE("none"), // no inheritance
+        CLASSPATH("classpath"), // JDK or Minecraft dependency (LWJGL, Paulscode, etc.)
+        JAR("jar"); // another Minecraft class
+
+        private final String name;
+
+        InheritanceStatus(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
 
         public boolean isJar() {
             return this.equals(JAR);

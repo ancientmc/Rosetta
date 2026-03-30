@@ -33,5 +33,4 @@ public class RosettaTest {
             throw new RuntimeException(e);
         }
     }
-
 }

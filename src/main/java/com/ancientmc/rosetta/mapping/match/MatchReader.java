@@ -51,6 +51,10 @@ public class MatchReader {
             } else if (line.startsWith("\t\tma\t")) {
                 MatchParameter param = getParam(line, currentMethod);
                 params.add(param);
+            } else if (line.startsWith("\t\tmv\t") || line.startsWith("\tmu\t")
+                    || line.startsWith("\tfu\t") || line.startsWith("\t\tmvu")
+                    || line.startsWith("\t\tmau\t")) {
+                currentMethod.setParams(params);
             }
 
             if (line.equals(lines.getLast())) {
