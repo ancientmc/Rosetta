@@ -100,7 +100,7 @@ public class UpdateFunction extends Function {
         if (match.isMatched(match.getClasses(), cls)) {
             MatchClass matchClass = match.getType(match.getClasses(), cls); // get match class from java class info
             TsrgClass oldTsrgClass = oldTsrg.getClass(matchClass.getOldName()); // get tsrg class from match info
-            return new TsrgClass(cls.getName(), oldTsrgClass.getMapped(), oldTsrgClass.getId());
+            return new TsrgClass(cls.getName(), config.namespace + oldTsrgClass.getPackagelessMapped(), oldTsrgClass.getId());
         } else {
             String id = classIds.get(cls);
             String mapped = config.isUnobfuscated(cls.getName()) ? cls.getName() : config.namespace + "c_" + id;

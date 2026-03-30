@@ -38,6 +38,10 @@ public final class TsrgClass implements TsrgType {
         return mapped;
     }
 
+    public String getPackagelessMapped() {
+        return mapped.substring(mapped.lastIndexOf("/") + 1);
+    }
+
     @Override
     public String getId() {
         return id;
