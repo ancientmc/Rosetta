@@ -34,7 +34,6 @@ public class MatchReader {
         MatchMethod currentMethod = MatchMethod.dummy();
 
         for (String line : lines) {
-            System.out.println(line);
             if (line.startsWith("c\tL")) {
                 currentMethod.setParams(params);
                 currentClass.setChildren(fields, methods);

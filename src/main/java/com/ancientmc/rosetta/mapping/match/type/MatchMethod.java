@@ -24,7 +24,7 @@ public final class MatchMethod implements MatchType<Method>, MatchChildType<Clas
     public void setParams(List<MatchParameter> params) {
         this.params = params.stream().filter(p -> p.getOldParentName().equals(oldName) && p.getNewParentName().equals(newName)
                 && p.getParent().getOldDesc().equals(oldDesc) && p.getParent().getNewDesc().equals(newDesc)
-                && p.getParent().getOldParentName().equals(parent.getOldName()) && p.getParent().getNewParentName().equals(parent.getOldName())).toList();
+                && p.getParent().getOldParentName().equals(parent.getOldName()) && p.getParent().getNewParentName().equals(parent.getNewName())).toList();
     }
 
     public static MatchMethod dummy() {
