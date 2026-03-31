@@ -78,4 +78,11 @@ public final class MatchMethod implements MatchType<Method>, MatchChildType<Clas
                 && type.getDesc().equals(newDesc)
                 && type.getParentName().equals(getNewParentName());
     }
+
+    @Override
+    public String toString() {
+        return "Old Name = " +  oldName + " | New Name = " + newName
+                + " | Old Desc = " + oldDesc + " | New Desc = " + newDesc
+                + " | Old Parent = " + getOldParentName() + " | New Parent = " + getNewParentName();
+    }
 }

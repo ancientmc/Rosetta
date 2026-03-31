@@ -63,6 +63,6 @@ public final class TsrgMethod implements TsrgType, TsrgChildType<TsrgClass> {
 
     @Override
     public String toString() {
-        return getIndent() + String.join(" ", obf, desc, mapped, id) + "\n";
+        return getIndent() + String.join(" ", obf, desc, mapped, id);
     }
 }

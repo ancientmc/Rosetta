@@ -47,4 +47,9 @@ public final class MatchClass implements MatchType<ClassType> {
     public List<MatchMethod> getMethods() {
         return methods;
     }
+
+    @Override
+    public String toString() {
+        return "Old Name = " +  oldName + " | New Name = " + newName;
+    }
 }

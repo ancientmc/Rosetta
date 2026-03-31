@@ -58,7 +58,7 @@ public class Tsrg {
             writer.flush();
 
             for (TsrgType line : lines) {
-                writer.write(line.toString());
+                writer.write(line.toString() + "\n");
                 writer.flush();
             }
         }

@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.ancientmc'
-version = '1.0-SNAPSHOT-4'
+version = '1.0-SNAPSHOT-5'
 
 repositories {
     mavenCentral()
@@ -13,9 +13,13 @@ repositories {
 }
 
 dependencies {
+    implementation 'ch.qos.logback:logback-classic:1.5.32'
     implementation 'com.google.code.gson:gson:2.13.0'
     implementation 'info.picocli:picocli:4.7.6'
     implementation 'net.neoforged:srgutils:1.0.11'
+    implementation 'org.apache.logging.log4j:log4j-api:2.25.4'
+    implementation 'org.apache.logging.log4j:log4j-core:2.25.4'
+    implementation 'org.apache.logging.log4j:log4j-slf4j2-impl:2.25.4'
     implementation 'org.ow2.asm:asm:9.9.1'
     implementation 'org.ow2.asm:asm-tree:9.9.1'
 

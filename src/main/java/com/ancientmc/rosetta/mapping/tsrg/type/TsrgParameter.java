@@ -45,6 +45,6 @@ public final class TsrgParameter implements TsrgType, TsrgChildType<TsrgMethod> 
     // \t\t# o name id\n
     @Override
     public String toString() {
-        return getIndent() + String.join(" ", Integer.toString(index), getObf(), name, id) + "\n";
+        return getIndent() + String.join(" ", Integer.toString(index), getObf(), name, id);
     }
 }

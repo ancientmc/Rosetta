@@ -2,13 +2,13 @@ package com.ancientmc.rosetta.function;
 
 import com.ancientmc.rosetta.Config;
 import com.ancientmc.rosetta.jar.Jar;
-import com.ancientmc.rosetta.jar.type.ClassType;
-import com.ancientmc.rosetta.jar.type.Field;
-import com.ancientmc.rosetta.jar.type.Method;
-import com.ancientmc.rosetta.jar.type.Parameter;
+import com.ancientmc.rosetta.jar.type.*;
 import com.ancientmc.rosetta.mapping.IdSet;
+import com.ancientmc.rosetta.mapping.match.type.MatchType;
 import com.ancientmc.rosetta.mapping.tsrg.Tsrg;
 import com.ancientmc.rosetta.mapping.tsrg.type.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +21,8 @@ import java.util.List;
  * @author moist-mason
  */
 public class GenerateFunction extends Function {
+    private static Logger LOGGER = LoggerFactory.getLogger(GenerateFunction.class);
+
     private final Jar jar;
     private final Config config;
     private final File tsrgFile;
@@ -96,22 +98,28 @@ public class GenerateFunction extends Function {
         tsrgClasses.add(tsrgCls);
     }
 
+    private <T extends TsrgType> T logAndGetTsrg(T type, String typeName) {
+        LOGGER.info("TSRG {} -> {}", typeName, type);
+        return type;
+    }
+
     private TsrgClass getTsrgClass(ClassType cls) {
         String id = classIds.get(cls);
         String mapped = config.isUnobfuscated(cls.getName()) ? cls.getName() : config.namespace + "c_" + id;
-        return new TsrgClass(cls.getName(), mapped, id);
+        return logAndGetTsrg(new TsrgClass(cls.getName(), mapped, id), "class");
     }
 
     private TsrgField getTsrgField(Field field, TsrgClass tsrgCls) {
         String id = fieldIds.get(field);
+        LOGGER.info("New field. ID -> {}", id);
         String mapped = field.getName().length() <= config.maxObfChars ? "f_" + id : field.getName();
-        return new TsrgField(field.getName(), mapped, tsrgCls, id);
+        return logAndGetTsrg(new TsrgField(field.getName(), mapped, tsrgCls, id), "field");
     }
 
     private TsrgMethod getTsrgMethod(Method method, Method superMethod, TsrgClass tsrgCls) {
         String id = method.isInheritedFromJar() ? methodIds.get(superMethod) : methodIds.get(method);
         String mapped = getMappedMethod(method, id);
-        return new TsrgMethod(method.getName(), method.getDesc(), mapped, tsrgCls, id);
+        return logAndGetTsrg(new TsrgMethod(method.getName(), method.getDesc(), mapped, tsrgCls, id), "method");
     }
 
     private TsrgParameter getTsrgParameter(Parameter param, Method method, Method superMethod, TsrgMethod tsrgMtd) {
@@ -119,7 +127,7 @@ public class GenerateFunction extends Function {
                 ? paramIds.get(superMethod.getParam(param.getIndex()))
                 : paramIds.get(method.getParam(param.getIndex()));
         String name = "p_" + id;
-        return new TsrgParameter(param.getIndex(), name, tsrgMtd, id);
+        return logAndGetTsrg(new TsrgParameter(param.getIndex(), name, tsrgMtd, id), "param");
     }
 
     private String getMappedMethod(Method method, String mid) {

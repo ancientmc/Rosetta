@@ -11,6 +11,8 @@ import com.ancientmc.rosetta.mapping.match.MatchReader;
 import com.ancientmc.rosetta.mapping.tsrg.Tsrg;
 import com.ancientmc.rosetta.mapping.tsrg.TsrgReader;
 import com.google.gson.JsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.concurrent.Callable;
@@ -20,6 +22,7 @@ import static picocli.CommandLine.Option;
 
 @Command(name = "--update")
 public class UpdateCommand implements Callable<Integer> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UpdateCommand.class);
 
     @Option(names = "--config")
     File configFile;
@@ -47,6 +50,7 @@ public class UpdateCommand implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
+        log();
         Config config = new Config(configFile);
         JsonObject inheritance = Util.getJson(inheritanceFile);
         Jar jar = new JarReader(jarFile, inheritance, config).read();
@@ -58,5 +62,16 @@ public class UpdateCommand implements Callable<Integer> {
         function.exec();
 
         return 0;
+    }
+
+    private void log() {
+        LOGGER.info("UPDATE COMMAND");
+        LOGGER.info("Config file -> {}", configFile.getAbsolutePath());
+        LOGGER.info("JAR file -> {}", jarFile.getAbsolutePath());
+        LOGGER.info("Inheritance file -> {}", inheritanceFile.getAbsolutePath());
+        LOGGER.info("Old TSRG file -> {}", oldTsrgFile.getAbsolutePath());
+        LOGGER.info("New TSRG file -> {}", oldTsrgFile.getAbsolutePath());
+        LOGGER.info("Old IDs file -> {}", oldIdCsv.getAbsolutePath());
+        LOGGER.info("New IDs file -> {}", newIdCsv.getAbsolutePath());
     }
 }

@@ -6,12 +6,11 @@ import com.ancientmc.rosetta.jar.type.*;
 import com.ancientmc.rosetta.mapping.Counters;
 import com.ancientmc.rosetta.mapping.IdSet;
 import com.ancientmc.rosetta.mapping.match.Match;
-import com.ancientmc.rosetta.mapping.match.type.MatchClass;
-import com.ancientmc.rosetta.mapping.match.type.MatchField;
-import com.ancientmc.rosetta.mapping.match.type.MatchMethod;
-import com.ancientmc.rosetta.mapping.match.type.MatchParameter;
+import com.ancientmc.rosetta.mapping.match.type.*;
 import com.ancientmc.rosetta.mapping.tsrg.Tsrg;
 import com.ancientmc.rosetta.mapping.tsrg.type.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +18,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class UpdateFunction extends Function {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UpdateFunction.class);
+
     private final Jar jar;
     private final Config config;
     private final Match match;
@@ -58,10 +59,21 @@ public class UpdateFunction extends Function {
         List<TsrgClass> tsrgClasses = new LinkedList<>();
 
         for (ClassType cls : jar.getClasses()) {
+            LOGGER.info("Class -> {}", cls.getName());
             buildClass(lines, cls, tsrgClasses);
         }
 
         return new Tsrg(newTsrg, lines, tsrgClasses);
+    }
+
+    private <T extends TsrgType> T logAndGetTsrg(T type, String typeName, String category) {
+        LOGGER.info("{} TSRG {} -> {}", category, typeName, type);
+        return type;
+    }
+
+    private <J extends Type, T extends MatchType<J>> T logAndGetMatch(T type, String typeName) {
+        LOGGER.info("Match {} -> {}", typeName, type);
+        return type;
     }
 
     private void buildClass(List<TsrgType> lines, ClassType cls, List<TsrgClass> tsrgClasses) {
@@ -97,39 +109,54 @@ public class UpdateFunction extends Function {
     }
 
     private TsrgClass getTsrgCls(ClassType cls) {
+        TsrgClass newClass;
+
         if (match.isMatched(match.getClasses(), cls)) {
-            MatchClass matchClass = match.getType(match.getClasses(), cls); // get match class from java class info
-            TsrgClass oldTsrgClass = oldTsrg.getClass(matchClass.getOldName()); // get tsrg class from match info
-            return new TsrgClass(cls.getName(), config.namespace + oldTsrgClass.getPackagelessMapped(), oldTsrgClass.getId());
+            MatchClass matchClass = logAndGetMatch(match.getType(match.getClasses(), cls), "class"); // get match class from java class info
+            TsrgClass oldTsrgClass = logAndGetTsrg(oldTsrg.getClass(matchClass.getOldName()), "class", "Old"); // get tsrg class from match info
+            newClass = new TsrgClass(cls.getName(), config.namespace + oldTsrgClass.getPackagelessMapped(), oldTsrgClass.getId());
         } else {
             String id = classIds.get(cls);
+            LOGGER.info("New class. ID -> {}", id);
             String mapped = config.isUnobfuscated(cls.getName()) ? cls.getName() : config.namespace + "c_" + id;
-            return new TsrgClass(cls.getName(), mapped, id);
+            newClass = new TsrgClass(cls.getName(), mapped, id);
         }
+
+        return logAndGetTsrg(newClass, "class", "New");
     }
 
     private TsrgField getTsrgField(Field field, TsrgClass tsrgClass) {
+        TsrgField newField;
+
         if (match.isMatched(match.getFields(), field)) {
             MatchField matchField = match.getType(match.getFields(), field);
-            TsrgField tsrgField = oldTsrg.getField(matchField.getOldName(), matchField.getOldParentName());
-            return new TsrgField(field.getName(), tsrgField.getMapped(), tsrgClass, tsrgField.getId());
+            TsrgField oldTsrgField = logAndGetTsrg(oldTsrg.getField(matchField.getOldName(), matchField.getOldParentName()), "field", "Old");
+            newField = new TsrgField(field.getName(), oldTsrgField.getMapped(), tsrgClass, oldTsrgField.getId());
         } else {
             String id = fieldIds.get(field);
+            LOGGER.info("New field. ID -> {}", id);
             String mapped = field.getName().length() <= config.maxObfChars ? "f_" + id : field.getName();
-            return new TsrgField(field.getName(), mapped, tsrgClass, id);
+            newField = new TsrgField(field.getName(), mapped, tsrgClass, id);
         }
+
+        return logAndGetTsrg(newField, "field", "New");
     }
 
     private TsrgMethod getTsrgMethod(Method method, TsrgClass tsrgClass) {
+        TsrgMethod newMethod;
+
         if (match.isMatched(match.getMethods(), method)) {
-            MatchMethod matchMethod = match.getType(match.getMethods(), method);
+            MatchMethod matchMethod = logAndGetMatch(match.getType(match.getMethods(), method), "method");
             TsrgMethod tsrgMethod = oldTsrg.getMethod(matchMethod.getOldName(), matchMethod.getOldDesc(), matchMethod.getOldParentName());
-            return new TsrgMethod(method.getName(), method.getDesc(), tsrgMethod.getMapped(), tsrgClass, tsrgMethod.getId());
+            newMethod = new TsrgMethod(method.getName(), method.getDesc(), tsrgMethod.getMapped(), tsrgClass, tsrgMethod.getId());
         } else {
             String mid = methodIds.get(method);
+            LOGGER.info("New method. ID -> {}", mid);
             String mapped = getMappedMethod(method, mid);
-            return new TsrgMethod(method.getName(), method.getDesc(), mapped, tsrgClass, mid);
+            newMethod = new TsrgMethod(method.getName(), method.getDesc(), mapped, tsrgClass, mid);
         }
+
+        return logAndGetTsrg(newMethod, "method", "New");
     }
 
     private String getMappedMethod(Method method, String mid) {
@@ -146,25 +173,31 @@ public class UpdateFunction extends Function {
         if (method.hasParams()) {
             if (match.isMatched(match.getMethods(), method)) { // matched method
                 for (Parameter param : method.getParams()) {
+                    TsrgParameter newTsrgParam;
                     MatchMethod matchMethod = match.getType(match.getMethods(), method);
                     TsrgMethod tsrgMethod = oldTsrg.getMethod(matchMethod.getOldName(), matchMethod.getOldDesc(), matchMethod.getOldParentName());
                     MatchParameter matchParam = matchMethod.getParams()
                             .stream().filter(p -> p.getNewIndex() == param.getIndex()).findAny().orElse(null);
 
                     if (matchParam != null) { // matched param in matched method
-                        TsrgParameter oldTsrgParam = tsrgMethod.getParameter(param.getIndex());
-                        TsrgParameter newTsrgParam = new TsrgParameter(param.getIndex(), oldTsrgParam.getMapped(), parent, oldTsrgParam.getId());
-                        lines.add(newTsrgParam);
+                        LOGGER.info("Matched param in matched method -> {}", matchParam);
+                        TsrgParameter oldTsrgParam = tsrgMethod.getParameter(matchParam.getOldIndex());
+                        newTsrgParam = new TsrgParameter(param.getIndex(), oldTsrgParam.getMapped(), parent, oldTsrgParam.getId());
                     } else { // new param in matched method
                         String id = paramIds.get(param);
-                        TsrgParameter newTsrgParam = new TsrgParameter(param.getIndex(), "p_" + id, parent, id);
-                        lines.add(newTsrgParam);
+                        LOGGER.info("New param in matched method. ID -> {}", id);
+                        newTsrgParam = new TsrgParameter(param.getIndex(), "p_" + id, parent, id);
                     }
+
+                    LOGGER.info("New TSRG param -> {}", newTsrgParam);
+                    lines.add(newTsrgParam);
                 }
             } else { // unmatched method, all new params
                 for (Parameter param : method.getParams()) {
                     String id = paramIds.get(param);
+                    LOGGER.info("New parameter in new method. ID -> {}", id);
                     TsrgParameter newTsrgParam = new TsrgParameter(param.getIndex(), "p_" + id, parent, id);
+                    LOGGER.info("New TSRG param -> {}", newTsrgParam);
                     lines.add(newTsrgParam);
                 }
             }

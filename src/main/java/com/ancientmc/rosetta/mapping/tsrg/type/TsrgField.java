@@ -40,6 +40,6 @@ public final class TsrgField implements TsrgType, TsrgChildType<TsrgClass> {
 
     @Override
     public String toString() {
-        return getIndent() + String.join(" ", obf, mapped, id) + "\n";
+        return getIndent() + String.join(" ", obf, mapped, id);
     }
 }

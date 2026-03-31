@@ -51,4 +51,9 @@ public final class MatchParameter implements MatchType<Parameter>, MatchChildTyp
     public String getNewParentName() {
         return parent.getNewName();
     }
+
+    @Override
+    public String toString() {
+        return "Old Index = " + oldIndex + " | New Index = " + newIndex;
+    }
 }

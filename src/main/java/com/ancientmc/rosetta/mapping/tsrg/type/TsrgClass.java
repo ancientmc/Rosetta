@@ -54,6 +54,6 @@ public final class TsrgClass implements TsrgType {
 
     @Override
     public String toString() {
-        return getIndent() + String.join(" ", obf, mapped, id) + "\n";
+        return getIndent() + String.join(" ", obf, mapped, id);
     }
 }

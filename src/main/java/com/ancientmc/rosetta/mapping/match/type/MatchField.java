@@ -44,4 +44,10 @@ public final class MatchField implements MatchType<Field>, MatchChildType<ClassT
         return type.getName().equals(newName)
                 && type.getParentName().equals(getNewParentName());
     }
+
+    @Override
+    public String toString() {
+        return "Old Name = " +  oldName + " | New Name = " + newName
+                + " | Old Parent = " + getOldParentName() + " | New Parent = " + getNewParentName();
+    }
 }

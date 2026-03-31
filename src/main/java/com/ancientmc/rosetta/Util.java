@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
 public class Util {
     public static JsonObject getJson(File file) {
@@ -18,5 +19,9 @@ public class Util {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String prettyListString(List<String> list) {
+        return String.join("\n", list);
     }
 }

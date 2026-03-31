@@ -2,6 +2,8 @@ package com.ancientmc.rosetta;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,6 +14,7 @@ import java.util.List;
  * @author moist-mason
  */
 public class Config {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Config.class);
 
     /** List of packages that determine which classes are excluded from parsing. */
     public final List<String> excluded;
@@ -31,6 +34,7 @@ public class Config {
         unobfuscated = getArray(config, "unobfuscated");
         namespace = config.get("namespace").getAsString();
         maxObfChars = config.get("max_obf_chars").getAsInt();
+        log();
     }
 
     private List<String> getArray(JsonObject config, String name) {
@@ -57,5 +61,13 @@ public class Config {
      */
     public boolean isUnobfuscated(String data) {
         return unobfuscated.contains(data);
+    }
+
+    private void log() {
+        LOGGER.info("CONFIG SETTINGS:");
+        LOGGER.info("Excluded classes -> {}", Util.prettyListString(excluded));
+        LOGGER.info("Unobfuscated classes -> {}", Util.prettyListString(unobfuscated));
+        LOGGER.info("Namespace -> {}", namespace);
+        LOGGER.info("Max obfuscation characters -> {}", maxObfChars);
     }
 }
